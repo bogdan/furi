@@ -103,4 +103,13 @@ describe Furi do
     )
   end
 
+  it "finds out port if not explicitly defined`" do
+    expect("http://gusiev.com").to have_parts(
+      protocol: 'http',
+      port: nil,
+      "port!" => 80
+    )
+    
+  end
+
 end

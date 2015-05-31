@@ -12,6 +12,24 @@ module Furi
     anchor: [:fragment],
   }
 
+  DELEGATES = [:port!]
+  
+  PORT_MAPPING = {
+    "http" => 80,
+    "https" => 443,
+    "ftp" => 21,
+    "tftp" => 69,
+    "sftp" => 22,
+    "ssh" => 22,
+    "svn+ssh" => 22,
+    "telnet" => 23,
+    "nntp" => 119,
+    "gopher" => 70,
+    "wais" => 210,
+    "ldap" => 389,
+    "prospero" => 1525
+  }
+
   class Expressions
     attr_accessor :protocol
 
@@ -29,7 +47,7 @@ module Furi
   end
 
   class << self
-    (PARTS + ALIASES.values.flatten).each do |part|
+    (PARTS + ALIASES.values.flatten + DELEGATES).each do |part|
       define_method(part) do |string|
         URI.new(string).send(part)
       end
@@ -155,6 +173,15 @@ module Furi
 
     def expressions
       Furi.expressions
+    end
+
+    def port!
+      return port if port
+      if protocol
+        PORT_MAPPING.fetch(protocol) do
+          raise 'Port is undefined'
+        end
+      end
     end
 
     protected
