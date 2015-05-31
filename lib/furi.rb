@@ -58,6 +58,26 @@ module Furi
     parse(string).update(parts).to_s
   end
 
+  def self.serialize(query, namespace = nil)
+    case query
+    when Hash
+      query.map do |key, value|
+        unless (value.is_a?(Hash) || value.is_a?(Array)) && value.empty?
+          serialize(value, namespace ? "#{namespace}[#{key}]" : key)
+        else
+          nil
+        end
+      end.flatten.compact.sort!.join('&')
+    when Array
+      namespace = "#{namespace}[]"
+      query.map do |item|
+        serialize(item, namespace)
+      end
+    else
+      "#{CGI.escape(namespace.to_s)}=#{CGI.escape(query.to_s)}"
+    end
+  end
+
   class URI
 
     attr_reader(*PARTS)
@@ -92,6 +112,7 @@ module Furi
       parts.each do |part, value|
         send(:"#{part}=", value)
       end
+      self
     end
 
     def to_s
@@ -99,7 +120,7 @@ module Furi
       if protocol
         result << "#{protocol}://"
       end
-      result << authority
+      result << host
       result << path
       if query_string
         result << "?"
@@ -135,40 +156,31 @@ module Furi
 
     def query
       return @query if query_level?
+      @query = parse_query_string(@query_string)
+    end
 
+    def parse_query_string(string)
       params = {}
-      @query_string.split(/[&;]/).each do |pairs|
+      return params if !string || string.empty?
+      string.split(/[&;]/).each do |pairs|
         key, value = pairs.split('=',2).select{|v| CGI::unescape(v) }
         params[key] = value
       end
-      @query = params
+      params
+    end
+
+    def query=(value)
+      @query = case value
+               when String then raise parse_query_string(value)
+               when Hash then value
+               else 
+                 raise 'Query can only be Hash or String'
+               end
     end
 
     def query_string
       return @query_string unless query_level?
-      serialize_query(@query)
-      @query.select do |key, value|
-        unless (value.is_a?(Hash) || value.is_a?(Array)) && value.empty?
-          value.to_query(namespace ? "#{namespace}[#{key}]" : key)
-        end
-      end.compact.sort! * '&'
-
-    end
-
-    def serialize_query(query, namespace = nil)
-      case query
-      when Hash
-        query.select do |key, value|
-          unless (value.is_a?(Hash) || value.is_a?(Array)) && value.empty?
-            serialize_query(value, namespace ? "#{namespace}[#{key}]" : key)
-          end
-        end.compact.sort! * '&'
-      when Array
-        query.map do |item|
-          prefix = CGI.escape("#{namespace}[]")
-          "#{prefix}=#{CGI.escape(item)}"
-        end
-      end
+      Furi.serialize(@query)
     end
 
     def expressions
@@ -177,14 +189,12 @@ module Furi
 
     def port!
       return port if port
-      if protocol
-        PORT_MAPPING.fetch(protocol) do
-          raise 'Port is undefined'
-        end
-      end
+      return PORT_MAPPING[protocol] if protocol
+      nil
     end
 
     protected
+
     def query_level?
       !!defined?(@query)
     end

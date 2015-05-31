@@ -25,8 +25,27 @@ describe Furi do
 
   end
 
+  class SerializeAs
+    def initialize(expectation)
+      @expectation = expectation
+    end
+
+    def matches?(hash)
+      @hash = hash
+      Furi.serialize(hash) == @expectation
+    end
+
+    def failure_message
+      "Expected #{@hash.inspect} to serialize as #{@expectation.inspect}, but was serialized as #{Furi.serialize(@hash)}"
+    end
+  end
+
   def have_parts(parts)
     PartsMatcher.new(parts)
+  end
+
+  def serialize_as(value)
+    SerializeAs.new(value)
   end
   
 
@@ -35,6 +54,7 @@ describe Furi do
       protocol: 'http',
       host: 'gusiev.com',
       query_string: nil,
+      query: {},
       path: nil,
       port: nil,
     )
@@ -109,7 +129,20 @@ describe Furi do
       port: nil,
       "port!" => 80
     )
-    
+  end
+
+  it "support update for query" do
+    expect(Furi.update("/index.html?a=b", query: {c: 'd'})).to eq('/index.html?c=d')
+  end
+
+  describe "serialize" do
+    it "should work" do
+      expect({a: 'b'}).to serialize_as("a=b")
+ 
+      expect({:a => {:b => 'c'}, :q => [1,2]}).to serialize_as("a%5Bb%5D=c&q%5B%5D=1&q%5B%5D=2")
+      expect({:hello => {world: nil}, a: {b: [{c: nil}]}}).to serialize_as("")
+      expect(nil).to serialize_as("")
+    end
   end
 
 end
