@@ -61,21 +61,31 @@ module Furi
   def self.serialize(query, namespace = nil)
     case query
     when Hash
-      query.map do |key, value|
+      result = query.map do |key, value|
         unless (value.is_a?(Hash) || value.is_a?(Array)) && value.empty?
           serialize(value, namespace ? "#{namespace}[#{key}]" : key)
         else
           nil
         end
-      end.flatten.compact.sort!.join('&')
+      end
+      result.flatten!
+      result.compact!
+      result.join('&')
     when Array
       namespace = "#{namespace}[]"
       query.map do |item|
         serialize(item, namespace)
       end
     else
-      "#{CGI.escape(namespace.to_s)}=#{CGI.escape(query.to_s)}"
+      if namespace 
+        "#{CGI.escape(namespace.to_s)}=#{CGI.escape(query.to_s)}"
+      else
+        ""
+      end
     end
+  end
+
+  def parse_query_string(string)
   end
 
   class URI
