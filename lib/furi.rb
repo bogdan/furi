@@ -72,6 +72,10 @@ module Furi
       result.compact!
       result.join('&')
     when Array
+      if namespace.nil? || namespace.empty?
+        raise ArgumentError, "Can not serialize Array without namespace"
+      end
+
       namespace = "#{namespace}[]"
       query.map do |item|
         serialize(item, namespace)
