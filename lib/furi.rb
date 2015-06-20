@@ -121,22 +121,20 @@ module Furi
       child_key = $1
       params[k] ||= []
       raise TypeError, "expected Array (got #{params[k].class.name}) for param `#{k}'" unless params[k].is_a?(Array)
-      if params_hash_type?(params[k].last) && !params[k].last.key?(child_key)
+      if params[k].last.is_a?(Hash) && !params[k].last.key?(child_key)
         normalize_params(params[k].last, child_key, v)
       else
         params[k] << normalize_params(params.class.new, child_key, v)
       end
     else
-      params[k] ||= params.class.new
-      raise TypeError, "expected Hash (got #{params[k].class.name}) for param `#{k}'" unless params_hash_type?(params[k])
+      params[k] ||= {}
+      unless params[k].is_a?(Hash)
+        raise TypeError, "expected Hash (got #{params[k].class.name}) for param `#{k}'"
+      end
       params[k] = normalize_params(params[k], after, v)
     end
 
     return params
-  end
-
-  def self.params_hash_type?(obj)
-    obj.kind_of?(Hash)
   end
 
   def self.serialize(string, namespace = nil)
