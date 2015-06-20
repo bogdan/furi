@@ -78,6 +78,9 @@ module Furi
 
       namespace = "#{namespace}[]"
       query.map do |item|
+        if item.is_a?(Array)
+          raise ArgumentError, "Can not serialize #{item.inspect} as element of an Array"
+        end
         serialize(item, namespace)
       end
     else
