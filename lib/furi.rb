@@ -108,35 +108,41 @@ module Furi
     end
   end
 
-  def self.parse_query_tokens(params, name, v)
+  def self.parse_query_tokens(params, name, value)
     name =~ %r(\A[\[\]]*([^\[\]]+)\]*)
-    k = $1 || ''
+    namespace = $1 || ''
     after = $' || ''
 
-    return if k.empty?
+    return if namespace.empty?
 
+    current = params[namespace]
     if after == ""
-      params[k] = v
+      current = value
     elsif after == "[]"
-      params[k] ||= []
-      raise TypeError, "expected Array (got #{params[k].class.name}) for param `#{k}'" unless params[k].is_a?(Array)
-      params[k] << v
+      current ||= []
+      unless current.is_a?(Array)
+        raise TypeError, "expected Array (got #{current.class}) for param `#{namespace}'"
+      end
+      current << value
     elsif after =~ %r(^\[\]\[([^\[\]]+)\]$) || after =~ %r(^\[\](.+)$)
       child_key = $1
-      params[k] ||= []
-      raise TypeError, "expected Array (got #{params[k].class.name}) for param `#{k}'" unless params[k].is_a?(Array)
-      if params[k].last.is_a?(Hash) && !params[k].last.key?(child_key)
-        parse_query_tokens(params[k].last, child_key, v)
+      current ||= []
+      unless current.is_a?(Array)
+        raise TypeError, "expected Array (got #{current.class}) for param `#{namespace}'"
+      end
+      if current.last.is_a?(Hash) && !current.last.key?(child_key)
+        parse_query_tokens(current.last, child_key, value)
       else
-        params[k] << parse_query_tokens({}, child_key, v)
+        current << parse_query_tokens({}, child_key, value)
       end
     else
-      params[k] ||= {}
-      unless params[k].is_a?(Hash)
-        raise TypeError, "expected Hash (got #{params[k].class.name}) for param `#{k}'"
+      current ||= {}
+      unless current.is_a?(Hash)
+        raise TypeError, "expected Hash (got #{current.class}) for param `#{namespace}'"
       end
-      params[k] = parse_query_tokens(params[k], after, v)
+      current = parse_query_tokens(current, after, value)
     end
+    params[namespace] = current
 
     return params
   end
