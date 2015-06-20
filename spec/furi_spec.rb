@@ -180,8 +180,89 @@ describe Furi do
       params = { b:{ c:3, d:[4,5], e:{ x:[6], y:7, z:[8,9] }}};
       expect(CGI.unescape(Furi.serialize(params))).to eq("b[c]=3&b[d][]=4&b[d][]=5&b[e][x][]=6&b[e][y]=7&b[e][z][]=8&b[e][z][]=9")
 
+    end
+  end
+
+  describe "parse_nested_query" do
+    it "should work" do
+    Furi.parse_nested_query("foo").
+      should eq "foo" => nil
+    Furi.parse_nested_query("foo=").
+      should eq "foo" => ""
+    Furi.parse_nested_query("foo=bar").
+      should eq "foo" => "bar"
+    Furi.parse_nested_query("foo=\"bar\"").
+      should eq "foo" => "\"bar\""
+
+    Furi.parse_nested_query("foo=bar&foo=quux").
+      should eq "foo" => "quux"
+    Furi.parse_nested_query("foo&foo=").
+      should eq "foo" => ""
+    Furi.parse_nested_query("foo=1&bar=2").
+      should eq "foo" => "1", "bar" => "2"
+    Furi.parse_nested_query("&foo=1&&bar=2").
+      should eq "foo" => "1", "bar" => "2"
+    Furi.parse_nested_query("foo&bar=").
+      should eq "foo" => nil, "bar" => ""
+    Furi.parse_nested_query("foo=bar&baz=").
+      should eq "foo" => "bar", "baz" => ""
+    Furi.parse_nested_query("my+weird+field=q1%212%22%27w%245%267%2Fz8%29%3F").
+      should eq "my weird field" => "q1!2\"'w$5&7/z8)?"
+
+    Furi.parse_nested_query("a=b&pid%3D1234=1023").
+      should eq "pid=1234" => "1023", "a" => "b"
+
+    Furi.parse_nested_query("foo[]").
+      should eq "foo" => [nil]
+    Furi.parse_nested_query("foo[]=").
+      should eq "foo" => [""]
+    Furi.parse_nested_query("foo[]=bar").
+      should eq "foo" => ["bar"]
+
+    Furi.parse_nested_query("foo[]=1&foo[]=2").
+      should eq "foo" => ["1", "2"]
+    Furi.parse_nested_query("foo=bar&baz[]=1&baz[]=2&baz[]=3").
+      should eq "foo" => "bar", "baz" => ["1", "2", "3"]
+    Furi.parse_nested_query("foo[]=bar&baz[]=1&baz[]=2&baz[]=3").
+      should eq "foo" => ["bar"], "baz" => ["1", "2", "3"]
+
+    Furi.parse_nested_query("x[y][z]=1").
+      should eq "x" => {"y" => {"z" => "1"}}
+    Furi.parse_nested_query("x[y][z][]=1").
+      should eq "x" => {"y" => {"z" => ["1"]}}
+    Furi.parse_nested_query("x[y][z]=1&x[y][z]=2").
+      should eq "x" => {"y" => {"z" => "2"}}
+    Furi.parse_nested_query("x[y][z][]=1&x[y][z][]=2").
+      should eq "x" => {"y" => {"z" => ["1", "2"]}}
+
+    Furi.parse_nested_query("x[y][][z]=1").
+      should eq "x" => {"y" => [{"z" => "1"}]}
+    Furi.parse_nested_query("x[y][][z][]=1").
+      should eq "x" => {"y" => [{"z" => ["1"]}]}
+    Furi.parse_nested_query("x[y][][z]=1&x[y][][w]=2").
+      should eq "x" => {"y" => [{"z" => "1", "w" => "2"}]}
+
+    Furi.parse_nested_query("x[y][][v][w]=1").
+      should eq "x" => {"y" => [{"v" => {"w" => "1"}}]}
+    Furi.parse_nested_query("x[y][][z]=1&x[y][][v][w]=2").
+      should eq "x" => {"y" => [{"z" => "1", "v" => {"w" => "2"}}]}
+
+    Furi.parse_nested_query("x[y][][z]=1&x[y][][z]=2").
+      should eq "x" => {"y" => [{"z" => "1"}, {"z" => "2"}]}
+    Furi.parse_nested_query("x[y][][z]=1&x[y][][w]=a&x[y][][z]=2&x[y][][w]=3").
+      should eq "x" => {"y" => [{"z" => "1", "w" => "a"}, {"z" => "2", "w" => "3"}]}
+
+    lambda { Furi.parse_nested_query("x[y]=1&x[y]z=2") }.
+      should raise_error(TypeError,  "expected Hash (got String) for param `y'")
+
+    lambda { Furi.parse_nested_query("x[y]=1&x[]=1") }.
+      should raise_error(TypeError, /expected Array \(got [^)]*\) for param `x'/)
+
+    lambda { Furi.parse_nested_query("x[y]=1&x[y][][w]=2") }.
+      should raise_error(TypeError, "expected Array (got String) for param `y'")
 
     end
+
   end
 
 end

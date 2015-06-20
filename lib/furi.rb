@@ -1,10 +1,11 @@
 require "cgi"
 require "furi/version"
+require "uri"
 
 module Furi
 
   PARTS =  [
-    :anchor, :protocol, :query_string, 
+    :anchor, :protocol, :query_string,
     :path, :host, :port, :username, :password
   ]
   ALIASES = {
@@ -13,7 +14,7 @@ module Furi
   }
 
   DELEGATES = [:port!]
-  
+
   PORT_MAPPING = {
     "http" => 80,
     "https" => 443,
@@ -85,18 +86,99 @@ module Furi
       end
     else
       if namespace
-        SerializeToken.new(namespace, query)
+        QueryToken.new(namespace, query)
       else
         []
       end
     end
   end
+  class KeySpaceConstrainedParams
+    def initialize(limit = 20)
+      @limit  = limit
+      @size   = 0
+      @params = {}
+    end
+
+    def [](key)
+      @params[key]
+    end
+
+    def []=(key, value)
+      @size += key.size if key && !@params.key?(key)
+      raise RangeError, 'exceeded available parameter key space' if @size > @limit
+      @params[key] = value
+    end
+
+    def key?(key)
+      @params.key?(key)
+    end
+
+    def to_params_hash
+      hash = @params
+      hash.keys.each do |key|
+        value = hash[key]
+        if value.kind_of?(self.class)
+          hash[key] = value.to_params_hash
+        elsif value.kind_of?(Array)
+          value.map! {|x| x.kind_of?(self.class) ? x.to_params_hash : x}
+        end
+      end
+      hash
+    end
+  end
+
+  def self.parse_nested_query(qs, d = nil)
+    params = KeySpaceConstrainedParams.new
+
+    (qs || '').split(d ? /[#{d}] */n : /[&;] */n).each do |p|
+      k, v = p.split('=', 2).map { |s| ::URI.decode_www_form_component(s) }
+
+      normalize_params(params, k, v)
+    end
+
+    return params.to_params_hash
+  end
+
+  def self.normalize_params(params, name, v = nil)
+    name =~ %r(\A[\[\]]*([^\[\]]+)\]*)
+    k = $1 || ''
+    after = $' || ''
+
+    return if k.empty?
+
+    if after == ""
+      params[k] = v
+    elsif after == "[]"
+      params[k] ||= []
+      raise TypeError, "expected Array (got #{params[k].class.name}) for param `#{k}'" unless params[k].is_a?(Array)
+      params[k] << v
+    elsif after =~ %r(^\[\]\[([^\[\]]+)\]$) || after =~ %r(^\[\](.+)$)
+      child_key = $1
+      params[k] ||= []
+      raise TypeError, "expected Array (got #{params[k].class.name}) for param `#{k}'" unless params[k].is_a?(Array)
+      if params_hash_type?(params[k].last) && !params[k].last.key?(child_key)
+        normalize_params(params[k].last, child_key, v)
+      else
+        params[k] << normalize_params(params.class.new, child_key, v)
+      end
+    else
+      params[k] ||= params.class.new
+      raise TypeError, "expected Hash (got #{params[k].class.name}) for param `#{k}'" unless params_hash_type?(params[k])
+      params[k] = normalize_params(params[k], after, v)
+    end
+
+    return params
+  end
+
+  def self.params_hash_type?(obj)
+    obj.kind_of?(KeySpaceConstrainedParams) || obj.kind_of?(Hash)
+  end
 
   def self.serialize(string, namespace = nil)
     serialize_tokens(string, namespace).join("&")
   end
-  
-  class SerializeToken
+
+  class QueryToken
     attr_reader :namespace, :query
     def initialize(namespace, query)
       @namespace = namespace
@@ -198,22 +280,20 @@ module Furi
     end
 
     def parse_query_tokens(string)
-      params = {}
-      return params if !string || string.empty?
-      string.split(/[&;]/).each do |pairs|
-        key, value = pairs.split('=',2).select{|v| CGI::unescape(v) }
-        params[key] = value
-      end
-      params
+      Furi.parse_nested_query(string)
     end
 
     def query=(value)
-      @query = case value
-               when String then raise parse_query_tokens(value)
-               when Hash then value
-               else 
-                 raise 'Query can only be Hash or String'
-               end
+      @query = nil
+      case value
+      when String then
+        @query_string = value
+      when Hash
+        @query = value
+      when nil
+      else
+        raise ArgumentError, 'Query can only be Hash or String'
+      end
     end
 
     def query_string
@@ -238,7 +318,7 @@ module Furi
     protected
 
     def query_level?
-      !!defined?(@query)
+      !!@query
     end
   end
 end
