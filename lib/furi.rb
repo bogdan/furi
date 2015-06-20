@@ -1,4 +1,3 @@
-require "cgi"
 require "furi/version"
 require "uri"
 
@@ -44,13 +43,13 @@ module Furi
   end
 
   def self.parse(string)
-    URI.new(string)
+    Uri.new(string)
   end
 
   class << self
     (PARTS + ALIASES.values.flatten + DELEGATES).each do |part|
       define_method(part) do |string|
-        URI.new(string).send(part)
+        Uri.new(string).send(part)
       end
     end
   end
@@ -159,7 +158,7 @@ module Furi
     end
 
     def to_s
-      "#{CGI.escape(name.to_s)}=#{CGI.escape(value.to_s)}"
+      "#{::URI.encode_www_form_component(name.to_s)}=#{::URI.encode_www_form_component(value.to_s)}"
     end
 
     def inspect
@@ -167,7 +166,7 @@ module Furi
     end
   end
 
-  class URI
+  class Uri
 
     attr_reader(*PARTS)
 
