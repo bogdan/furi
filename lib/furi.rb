@@ -130,7 +130,7 @@ module Furi
   def self.parse_nested_query(qs, d = nil)
     params = KeySpaceConstrainedParams.new
 
-    (qs || '').split(d ? /[#{d}] */n : /[&;] */n).each do |p|
+    (qs || '').split(d ? /[#{d}] */n : /[&;]/n).each do |p|
       k, v = p.split('=', 2).map { |s| ::URI.decode_www_form_component(s) }
 
       normalize_params(params, k, v)
