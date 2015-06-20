@@ -128,7 +128,7 @@ module Furi
       if params[k].last.is_a?(Hash) && !params[k].last.key?(child_key)
         parse_query_tokens(params[k].last, child_key, v)
       else
-        params[k] << parse_query_tokens(params.class.new, child_key, v)
+        params[k] << parse_query_tokens({}, child_key, v)
       end
     else
       params[k] ||= {}
