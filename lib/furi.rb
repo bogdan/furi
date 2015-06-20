@@ -92,54 +92,19 @@ module Furi
       end
     end
   end
-  class KeySpaceConstrainedParams
-    def initialize(limit = 20)
-      @limit  = limit
-      @size   = 0
-      @params = {}
+
+  def self.parse_nested_query(qs)
+    params = {}
+
+    (qs || '').split(/[&;] */n).each do |p|
+      token = QueryToken.parse(p)
+      normalize_params(params, token.name, token.value)
     end
 
-    def [](key)
-      @params[key]
-    end
-
-    def []=(key, value)
-      @size += key.size if key && !@params.key?(key)
-      raise RangeError, 'exceeded available parameter key space' if @size > @limit
-      @params[key] = value
-    end
-
-    def key?(key)
-      @params.key?(key)
-    end
-
-    def to_params_hash
-      hash = @params
-      hash.keys.each do |key|
-        value = hash[key]
-        if value.kind_of?(self.class)
-          hash[key] = value.to_params_hash
-        elsif value.kind_of?(Array)
-          value.map! {|x| x.kind_of?(self.class) ? x.to_params_hash : x}
-        end
-      end
-      hash
-    end
+    return params
   end
 
-  def self.parse_nested_query(qs, d = nil)
-    params = KeySpaceConstrainedParams.new
-
-    (qs || '').split(d ? /[#{d}] */n : /[&;]/n).each do |p|
-      k, v = p.split('=', 2).map { |s| ::URI.decode_www_form_component(s) }
-
-      normalize_params(params, k, v)
-    end
-
-    return params.to_params_hash
-  end
-
-  def self.normalize_params(params, name, v = nil)
+  def self.normalize_params(params, name, v)
     name =~ %r(\A[\[\]]*([^\[\]]+)\]*)
     k = $1 || ''
     after = $' || ''
@@ -171,7 +136,7 @@ module Furi
   end
 
   def self.params_hash_type?(obj)
-    obj.kind_of?(KeySpaceConstrainedParams) || obj.kind_of?(Hash)
+    obj.kind_of?(Hash)
   end
 
   def self.serialize(string, namespace = nil)
@@ -179,22 +144,28 @@ module Furi
   end
 
   class QueryToken
-    attr_reader :namespace, :query
-    def initialize(namespace, query)
-      @namespace = namespace
-      @query = query
+    attr_reader :name, :value
+
+    def self.parse(token)
+      k,v = token.split('=', 2).map { |s| ::URI.decode_www_form_component(s) }
+      new(k,v)
+    end
+
+    def initialize(name, value)
+      @name = name
+      @value = value
     end
 
     def to_a
-      [namespace, query]
+      [name, value]
     end
 
     def to_s
-      "#{CGI.escape(namespace.to_s)}=#{CGI.escape(query.to_s)}"
+      "#{CGI.escape(name.to_s)}=#{CGI.escape(value.to_s)}"
     end
 
     def inspect
-      [namespace, query].join('=')
+      [name, value].join('=')
     end
   end
 
@@ -302,7 +273,6 @@ module Furi
     end
 
     def query_tokens
-
     end
 
     def expressions
