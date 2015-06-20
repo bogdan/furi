@@ -58,19 +58,19 @@ module Furi
     parse(string).update(parts).to_s
   end
 
-  def self.serialize(query, namespace = nil)
+  def self.serialize_tokens(query, namespace = nil)
     case query
     when Hash
       result = query.map do |key, value|
         unless (value.is_a?(Hash) || value.is_a?(Array)) && value.empty?
-          serialize(value, namespace ? "#{namespace}[#{key}]" : key)
+          serialize_tokens(value, namespace ? "#{namespace}[#{key}]" : key)
         else
           nil
         end
       end
       result.flatten!
       result.compact!
-      result.join('&')
+      result
     when Array
       if namespace.nil? || namespace.empty?
         raise ArgumentError, "Can not serialize Array without namespace"
@@ -81,18 +81,38 @@ module Furi
         if item.is_a?(Array)
           raise ArgumentError, "Can not serialize #{item.inspect} as element of an Array"
         end
-        serialize(item, namespace)
+        serialize_tokens(item, namespace)
       end
     else
-      if namespace 
-        "#{CGI.escape(namespace.to_s)}=#{CGI.escape(query.to_s)}"
+      if namespace
+        SerializeToken.new(namespace, query)
       else
-        ""
+        []
       end
     end
   end
 
-  def parse_query_string(string)
+  def self.serialize(string, namespace = nil)
+    serialize_tokens(string, namespace).join("&")
+  end
+  
+  class SerializeToken
+    attr_reader :namespace, :query
+    def initialize(namespace, query)
+      @namespace = namespace
+      @query = query
+    end
+
+    def to_a
+      [namespace, query]
+    end
+    def to_s
+      "#{CGI.escape(namespace.to_s)}=#{CGI.escape(query.to_s)}"
+    end
+
+    def inspect
+      [namespace, query].join('=')
+    end
   end
 
   class URI
