@@ -93,17 +93,22 @@ module Furi
   end
 
   def self.parse_nested_query(qs)
-    params = {}
 
-    (qs || '').split(/[&;] */n).each do |p|
-      token = QueryToken.parse(p)
-      normalize_params(params, token.name, token.value)
+    params = {}
+    query_tokens(qs).each do |token|
+      parse_query_tokens(params, token.name, token.value)
     end
 
     return params
   end
 
-  def self.normalize_params(params, name, v)
+  def self.query_tokens(query)
+    (query || '').split(/[&;] */n).map do |p|
+      QueryToken.parse(p)
+    end
+  end
+
+  def self.parse_query_tokens(params, name, v)
     name =~ %r(\A[\[\]]*([^\[\]]+)\]*)
     k = $1 || ''
     after = $' || ''
@@ -121,16 +126,16 @@ module Furi
       params[k] ||= []
       raise TypeError, "expected Array (got #{params[k].class.name}) for param `#{k}'" unless params[k].is_a?(Array)
       if params[k].last.is_a?(Hash) && !params[k].last.key?(child_key)
-        normalize_params(params[k].last, child_key, v)
+        parse_query_tokens(params[k].last, child_key, v)
       else
-        params[k] << normalize_params(params.class.new, child_key, v)
+        params[k] << parse_query_tokens(params.class.new, child_key, v)
       end
     else
       params[k] ||= {}
       unless params[k].is_a?(Hash)
         raise TypeError, "expected Hash (got #{params[k].class.name}) for param `#{k}'"
       end
-      params[k] = normalize_params(params[k], after, v)
+      params[k] = parse_query_tokens(params[k], after, v)
     end
 
     return params
@@ -244,12 +249,9 @@ module Furi
 
     def query
       return @query if query_level?
-      @query = parse_query_tokens(@query_string)
+      @query = Furi.parse_nested_query(@query_string)
     end
 
-    def parse_query_tokens(string)
-      Furi.parse_nested_query(string)
-    end
 
     def query=(value)
       @query = nil
@@ -264,6 +266,7 @@ module Furi
       end
     end
 
+require "cgi"
     def query_string
       return @query_string unless query_level?
       Furi.serialize(@query)
