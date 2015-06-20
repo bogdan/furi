@@ -106,6 +106,7 @@ module Furi
     def to_a
       [namespace, query]
     end
+
     def to_s
       "#{CGI.escape(namespace.to_s)}=#{CGI.escape(query.to_s)}"
     end
@@ -193,10 +194,10 @@ module Furi
 
     def query
       return @query if query_level?
-      @query = parse_query_string(@query_string)
+      @query = parse_query_tokens(@query_string)
     end
 
-    def parse_query_string(string)
+    def parse_query_tokens(string)
       params = {}
       return params if !string || string.empty?
       string.split(/[&;]/).each do |pairs|
@@ -208,7 +209,7 @@ module Furi
 
     def query=(value)
       @query = case value
-               when String then raise parse_query_string(value)
+               when String then raise parse_query_tokens(value)
                when Hash then value
                else 
                  raise 'Query can only be Hash or String'
@@ -218,6 +219,10 @@ module Furi
     def query_string
       return @query_string unless query_level?
       Furi.serialize(@query)
+    end
+
+    def query_tokens
+
     end
 
     def expressions
