@@ -135,6 +135,7 @@ describe Furi do
     end
     it "parses url with query" do
       expect("/index.html?a=b&c=d").to have_parts(
+        host: nil,
         query_string: 'a=b&c=d',
         query: {'a' => 'b', 'c' => 'd'}
       )
