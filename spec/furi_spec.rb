@@ -155,6 +155,7 @@ describe Furi do
     end
     it "updates host" do
       expect(Furi.update("www.gusiev.com/index.html", host: 'gusiev.com')).to eq('gusiev.com/index.html')
+      expect(Furi.update("/index.html", host: 'gusiev.com')).to eq('gusiev.com/index.html')
       expect(Furi.update("http://www.gusiev.com/index.html", host: 'gusiev.com')).to eq('http://gusiev.com/index.html')
       expect(Furi.update("/index.html", host: 'gusiev.com')).to eq('gusiev.com/index.html')
     end
