@@ -145,9 +145,31 @@ describe Furi do
     )
   end
 
-  it "support update for query" do
-    expect(Furi.update("/index.html?a=b", query: {c: 'd'})).to eq('/index.html?c=d')
+  describe ".update" do
+    
+    it "support update for query" do
+      expect(Furi.update("/index.html?a=b", query: {c: 'd'})).to eq('/index.html?c=d')
+    end
+    it "updates host" do
+      expect(Furi.update("www.gusiev.com/index.html", host: 'gusiev.com')).to eq('gusiev.com/index.html')
+    end
+    it "updates port" do
+      expect(Furi.update("gusiev.com", port: 33)).to eq('gusiev.com:33')
+      expect(Furi.update("gusiev.com/index.html", port: 33)).to eq('gusiev.com:33/index.html')
+      expect(Furi.update("gusiev.com:33/index.html", port: 80)).to eq('gusiev.com:80/index.html')
+      expect(Furi.update("http://gusiev.com:33/index.html", port: 80)).to eq('http://gusiev.com/index.html')
+    end
+    it "updates protocol" do
+      expect(Furi.update("http://gusiev.com", protocol: '')).to eq('//gusiev.com')
+      expect(Furi.update("http://gusiev.com", protocol: nil)).to eq('gusiev.com')
+      expect(Furi.update("http://gusiev.com", protocol: 'https')).to eq('https://gusiev.com')
+      expect(Furi.update("gusiev.com", protocol: 'http')).to eq('http://gusiev.com')
+      expect(Furi.update("gusiev.com", protocol: 'http:')).to eq('http://gusiev.com')
+      expect(Furi.update("gusiev.com", protocol: 'http:/')).to eq('http://gusiev.com')
+      expect(Furi.update("gusiev.com", protocol: 'http://')).to eq('http://gusiev.com')
+    end
   end
+
 
   describe "serialize" do
     it "should work" do

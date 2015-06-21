@@ -96,19 +96,34 @@ module Furi
 
     params = {}
     query_tokens(qs).each do |token|
-      parse_query_tokens(params, token.name, token.value)
+      parse_query_token(params, token.name, token.value)
     end
 
     return params
   end
 
   def self.query_tokens(query)
-    (query || '').split(/[&;] */n).map do |p|
-      QueryToken.parse(p)
+    if query.is_a?(Array)
+      query.map do |token|
+        case token
+        when QueryToken
+          token
+        when String
+          QueryToken.parse(token)
+        when Array
+          QueryToken.new(*token)
+        else
+          raise ArgumentError, "Can not parse query token #{token.inspect}"
+        end
+      end
+    else
+      (query || '').split(/[&;] */n).map do |p|
+        QueryToken.parse(p)
+      end
     end
   end
 
-  def self.parse_query_tokens(params, name, value)
+  def self.parse_query_token(params, name, value)
     name =~ %r(\A[\[\]]*([^\[\]]+)\]*)
     namespace = $1 || ''
     after = $' || ''
@@ -131,16 +146,16 @@ module Furi
         raise TypeError, "expected Array (got #{current.class}) for param `#{namespace}'"
       end
       if current.last.is_a?(Hash) && !current.last.key?(child_key)
-        parse_query_tokens(current.last, child_key, value)
+        parse_query_token(current.last, child_key, value)
       else
-        current << parse_query_tokens({}, child_key, value)
+        current << parse_query_token({}, child_key, value)
       end
     else
       current ||= {}
       unless current.is_a?(Hash)
         raise TypeError, "expected Hash (got #{current.class}) for param `#{namespace}'"
       end
-      current = parse_query_tokens(current, after, value)
+      current = parse_query_token(current, after, value)
     end
     params[namespace] = current
 
@@ -199,9 +214,10 @@ module Furi
 
       if string.include?("://")
         @protocol, string = string.split(":", 2)
-        @protocol = nil if @protocol.empty?
+        @protocol = '' if @protocol.empty?
       end
       if string.start_with?("//")
+        @protocol ||= ''
         string = string[2..-1]
       end
       parse_authority(string)
@@ -214,12 +230,21 @@ module Furi
       self
     end
 
+    def merge(parts)
+      parts.each do |part, value|
+        
+      end
+    end
+
     def to_s
       result = []
       if protocol
-        result << "#{protocol}://"
+        result.push(protocol.empty? ? "//" : "#{protocol}://")
       end
       result << host
+      if port && !default_port?
+        result << ":#{port}"
+      end
       result << path
       if query_string
         result << "?"
@@ -262,8 +287,10 @@ module Furi
     def query=(value)
       @query = nil
       case value
-      when String then
+      when String
         @query_string = value
+      when Array
+        @query = Furi.query_tokens(value)
       when Hash
         @query = value
       when nil
@@ -272,13 +299,25 @@ module Furi
       end
     end
 
-require "cgi"
+    def host=(host)
+      @host = host
+    end
+
+    def port=(port)
+      @port = port.to_i
+      if @port == 0
+        raise ArgumentError, "port should be an Integer > 0"
+      end
+      @port
+    end
+
+    def protocol=(protocol)
+      @protocol = protocol ? protocol.gsub(%r{:/?/?\Z}, "") : nil
+    end
+
     def query_string
       return @query_string unless query_level?
       Furi.serialize(@query)
-    end
-
-    def query_tokens
     end
 
     def expressions
@@ -286,9 +325,15 @@ require "cgi"
     end
 
     def port!
-      return port if port
-      return PORT_MAPPING[protocol] if protocol
-      nil
+      port || default_port
+    end
+
+    def default_port
+      protocol ? PORT_MAPPING[protocol] : nil
+    end
+    
+    def default_port?
+      default_port && port == default_port
     end
 
     protected
