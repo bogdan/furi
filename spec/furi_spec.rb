@@ -68,7 +68,7 @@ describe Furi do
     it "parses URL without path" do
       expect("http://gusiev.com").to have_parts(
         protocol: 'http',
-        host: 'gusiev.com',
+        hostname: 'gusiev.com',
         query_string: nil,
         query: {},
         path: nil,
@@ -89,7 +89,7 @@ describe Furi do
     it "works with path without URL" do
       expect("/posts/index.html").to have_parts(
         path: '/posts/index.html',
-        host: nil,
+        hostname: nil,
         port: nil,
         protocol: nil,
       )
@@ -99,7 +99,7 @@ describe Furi do
       expect("http://user:pass@gusiev.com").to have_parts(
         username: 'user',
         password: 'pass',
-        host: 'gusiev.com',
+        hostname: 'gusiev.com',
         query_string: nil,
         anchor: nil,
       )
@@ -109,7 +109,7 @@ describe Furi do
       expect("http://user@gusiev.com").to have_parts(
         username: 'user',
         password: nil,
-        host: 'gusiev.com',
+        hostname: 'gusiev.com',
         query_string: nil,
         anchor: nil,
       )
@@ -127,7 +127,7 @@ describe Furi do
       expect("http://user:pass@gusiev.com:80").to have_parts(
         username: 'user',
         password: 'pass',
-        authority: 'user:pass',
+        userinfo: 'user:pass',
         protocol: 'http',
         port: 80,
         query_string: nil,
@@ -154,11 +154,11 @@ describe Furi do
       expect(Furi.update("/index.html?a=b", query: {c: 'd'})).to eq('/index.html?c=d')
     end
 
-    it "updates host" do
-      expect(Furi.update("www.gusiev.com/index.html", host: 'gusiev.com')).to eq('gusiev.com/index.html')
-      expect(Furi.update("/index.html", host: 'gusiev.com')).to eq('gusiev.com/index.html')
-      expect(Furi.update("http://www.gusiev.com/index.html", host: 'gusiev.com')).to eq('http://gusiev.com/index.html')
-      expect(Furi.update("/index.html", host: 'gusiev.com')).to eq('gusiev.com/index.html')
+    it "updates hostname" do
+      expect(Furi.update("www.gusiev.com/index.html", hostname: 'gusiev.com')).to eq('gusiev.com/index.html')
+      expect(Furi.update("/index.html", hostname: 'gusiev.com')).to eq('gusiev.com/index.html')
+      expect(Furi.update("http://www.gusiev.com/index.html", hostname: 'gusiev.com')).to eq('http://gusiev.com/index.html')
+      expect(Furi.update("/index.html", hostname: 'gusiev.com')).to eq('gusiev.com/index.html')
     end
 
     it "updates port" do

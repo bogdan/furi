@@ -5,7 +5,7 @@ module Furi
 
   PARTS =  [
     :anchor, :protocol, :query_string,
-    :path, :host, :port, :username, :password
+    :path, :hostname, :port, :username, :password
   ]
   ALIASES = {
     protocol: [:schema],
@@ -236,11 +236,21 @@ module Furi
       end
     end
 
-    def authority
+    def userinfo
       if username
         [username, password].compact.join(":")
       elsif password
         raise FormattingError, "can not build URI with password but without username"
+      else
+        nil
+      end
+    end
+
+    def host
+      if hostname
+        [hostname, explicit_port].compact.join(":")
+      elsif port
+        raise FormattingError, "can not build URI with port but without hostname"
       else
         nil
       end
@@ -251,21 +261,10 @@ module Furi
       if protocol
         result.push(protocol.empty? ? "//" : "#{protocol}://")
       end
-      if authority
-        result << authority
+      if userinfo
+        result << userinfo
       end
-      if username
-        result << username
-        if password
-          result << ":" << password
-        end
-      elsif password
-        raise FormattingError, "can not build URI with password but without username"
-      end
-      result << host
-      if port && !default_port?
-        result << ":" << port
-      end
+      result << host if host
       result << path
       if query_string
         result << "?" << query_string
@@ -291,9 +290,9 @@ module Furi
         @port = @port.to_i
       end
       if string.empty?
-        @host = nil
+        @hostname = nil
       else
-        @host = string
+        @hostname = string
       end
     end
 
@@ -318,8 +317,8 @@ module Furi
       end
     end
 
-    def host=(host)
-      @host = host
+    def hostname=(hostname)
+      @hostname = hostname
     end
 
     def port=(port)
@@ -360,7 +359,15 @@ module Furi
     end
     
     def default_port?
-      default_port && port == default_port
+      default_port && (!port || port == default_port)
+    end
+
+    def custom_port?
+      !default_port
+    end
+
+    def explicit_port
+      port == default_port ? nil : port
     end
 
     protected
