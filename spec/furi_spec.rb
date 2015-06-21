@@ -63,88 +63,91 @@ describe Furi do
   end
 
 
-  it "parses URL without path" do
-    expect("http://gusiev.com").to have_parts(
-                                              protocol: 'http',
-                                              host: 'gusiev.com',
-                                              query_string: nil,
-                                              query: {},
-                                              path: nil,
-                                              port: nil,
-                                             )
-  end
 
-  it "extracts anchor" do
-    expect("http://gusiev.com/posts/index.html?a=b#zz").to have_parts(
-      anchor: 'zz',
-      query_string: 'a=b',
-      path: '/posts/index.html',
-      port: nil,
-      protocol: 'http',
-    )
-  end
+  describe "#parse" do
+    it "parses URL without path" do
+      expect("http://gusiev.com").to have_parts(
+        protocol: 'http',
+        host: 'gusiev.com',
+        query_string: nil,
+        query: {},
+        path: nil,
+        port: nil,
+      )
+    end
 
-  it "works with path without URL" do
-    expect("/posts/index.html").to have_parts(
-      path: '/posts/index.html',
-      host: nil,
-      port: nil,
-      protocol: nil,
-    )
-  end
+    it "extracts anchor" do
+      expect("http://gusiev.com/posts/index.html?a=b#zz").to have_parts(
+        anchor: 'zz',
+        query_string: 'a=b',
+        path: '/posts/index.html',
+        port: nil,
+        protocol: 'http',
+      )
+    end
 
-  it "parses uri with user and password" do
-    expect("http://user:pass@gusiev.com").to have_parts(
-      username: 'user',
-      password: 'pass',
-      host: 'gusiev.com',
-      query_string: nil,
-      anchor: nil,
-    )
-  end
+    it "works with path without URL" do
+      expect("/posts/index.html").to have_parts(
+        path: '/posts/index.html',
+        host: nil,
+        port: nil,
+        protocol: nil,
+      )
+    end
 
-  it "parses uri with user and without password" do
-    expect("http://user@gusiev.com").to have_parts(
-      username: 'user',
-      password: nil,
-      host: 'gusiev.com',
-      query_string: nil,
-      anchor: nil,
-    )
-  end
+    it "parses uri with user and password" do
+      expect("http://user:pass@gusiev.com").to have_parts(
+        username: 'user',
+        password: 'pass',
+        host: 'gusiev.com',
+        query_string: nil,
+        anchor: nil,
+      )
+    end
+
+    it "parses uri with user and without password" do
+      expect("http://user@gusiev.com").to have_parts(
+        username: 'user',
+        password: nil,
+        host: 'gusiev.com',
+        query_string: nil,
+        anchor: nil,
+      )
+    end
 
 
-  it "supports aliases" do
-    expect("http://gusiev.com#zz").to have_parts(
-      schema: 'http',
-      fragment: 'zz',
-    )
-  end
+    it "supports aliases" do
+      expect("http://gusiev.com#zz").to have_parts(
+        schema: 'http',
+        fragment: 'zz',
+      )
+    end
 
-  it "parses uri with explicit port and auth data" do
-    expect("http://user:pass@gusiev.com:80").to have_parts(
-      username: 'user',
-      password: 'pass',
-      protocol: 'http',
-      port: 80,
-      query_string: nil,
-    )
-  end
-  it "parses url with query" do
-    expect("/index.html?a=b&c=d").to have_parts(
-      query_string: 'a=b&c=d',
-      query: {'a' => 'b', 'c' => 'd'}
-    )
-  end
+    it "parses uri with explicit port and auth data" do
+      expect("http://user:pass@gusiev.com:80").to have_parts(
+        username: 'user',
+        password: 'pass',
+        authority: 'user:pass',
+        protocol: 'http',
+        port: 80,
+        query_string: nil,
+      )
+    end
+    it "parses url with query" do
+      expect("/index.html?a=b&c=d").to have_parts(
+        query_string: 'a=b&c=d',
+        query: {'a' => 'b', 'c' => 'd'}
+      )
+    end
 
-  it "finds out port if not explicitly defined`" do
-    expect("http://gusiev.com").to have_parts(
-      protocol: 'http',
-      port: nil,
-      "port!" => 80
-    )
+    it "finds out port if not explicitly defined`" do
+      expect("http://gusiev.com").to have_parts(
+        protocol: 'http',
+        port: nil,
+        "port!" => 80
+      )
+    end
   end
-
   describe ".update" do
     
     it "support update for query" do
@@ -168,6 +171,7 @@ describe Furi do
       expect(Furi.update("gusiev.com", protocol: 'http:/')).to eq('http://gusiev.com')
       expect(Furi.update("gusiev.com", protocol: 'http://')).to eq('http://gusiev.com')
     end
+
   end
 
 

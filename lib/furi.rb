@@ -236,23 +236,42 @@ module Furi
       end
     end
 
+    def authority
+      if username
+        [username, password].compact.join(":")
+      elsif password
+        raise FormattingError, "can not build URI with password but without username"
+      else
+        nil
+      end
+    end
+
     def to_s
       result = []
       if protocol
         result.push(protocol.empty? ? "//" : "#{protocol}://")
       end
+      if authority
+        result << authority
+      end
+      if username
+        result << username
+        if password
+          result << ":" << password
+        end
+      elsif password
+        raise FormattingError, "can not build URI with password but without username"
+      end
       result << host
       if port && !default_port?
-        result << ":#{port}"
+        result << ":" << port
       end
       result << path
       if query_string
-        result << "?"
-        result << query_string
+        result << "?" << query_string
       end
       if anchor
-        result << "#"
-        result << anchor
+        result << "#" << anchor
       end
       result.join
     end
@@ -311,6 +330,14 @@ module Furi
       @port
     end
 
+    def username=(username)
+      @username = username
+    end
+
+    def password=(password)
+      @password = password
+    end
+
     def protocol=(protocol)
       @protocol = protocol ? protocol.gsub(%r{:/?/?\Z}, "") : nil
     end
@@ -341,5 +368,8 @@ module Furi
     def query_level?
       !!@query
     end
+  end
+
+  class FormattingError < StandardError
   end
 end
