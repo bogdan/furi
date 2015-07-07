@@ -42,8 +42,12 @@ module Furi
     Expressions.new
   end
 
-  def self.parse(string)
-    Uri.new(string)
+  def self.parse(argument)
+    Uri.new(argument)
+  end
+
+  def self.build(argument)
+    Uri.new(argument).to_s
   end
 
   class << self
@@ -201,26 +205,20 @@ module Furi
         define_method(aliaz) do
           send(origin)
         end
+
+        define_method(:"#{aliaz}=") do |*args|
+          send(:"#{origin}=", *args)
+        end
       end
     end
 
-    def initialize(string)
-      string, *@anchor = string.split("#")
-      @anchor = @anchor.empty? ? nil : @anchor.join("#")
-      if string.include?("?")
-        string, query_string = string.split("?", 2)
-        @query_string = query_string
+    def initialize(argument)
+      case argument
+      when String
+        parse_uri_string(argument)
+      when Hash
+        update(argument)
       end
-
-      if string.include?("://")
-        @protocol, string = string.split(":", 2)
-        @protocol = '' if @protocol.empty?
-      end
-      if string.start_with?("//")
-        @protocol ||= ''
-        string = string[2..-1]
-      end
-      parse_authority(string)
     end
 
     def update(parts)
@@ -256,6 +254,15 @@ module Furi
       end
     end
 
+    def host=(string)
+      @port = nil
+      if string.include?(":")
+        string, @port = string.split(":", 2)
+        @port = @port.to_i
+      end
+      @hostname = string.empty? ? nil : string
+    end
+
     def to_s
       result = []
       if protocol
@@ -273,27 +280,6 @@ module Furi
         result << "#" << anchor
       end
       result.join
-    end
-
-    def parse_authority(string)
-      if string.include?("/")
-        string, @path = string.split("/", 2)
-        @path = "/" + @path
-      end
-
-      if string.include?("@")
-        userinfo, string = string.split("@", 2)
-        @username, @password = userinfo.split(":", 2)
-      end
-      if string.include?(":")
-        string, @port = string.split(":", 2)
-        @port = @port.to_i
-      end
-      if string.empty?
-        @hostname = nil
-      else
-        @hostname = string
-      end
     end
 
     def query
@@ -358,23 +344,48 @@ module Furi
       protocol ? PORT_MAPPING[protocol] : nil
     end
     
-    def default_port?
-      default_port && (!port || port == default_port)
-    end
+    protected
 
-    def custom_port?
-      !default_port
+    def query_level?
+      !!@query
     end
 
     def explicit_port
       port == default_port ? nil : port
     end
 
-    protected
+    def parse_uri_string(string)
+      string, *@anchor = string.split("#")
+      @anchor = @anchor.empty? ? nil : @anchor.join("#")
+      if string.include?("?")
+        string, query_string = string.split("?", 2)
+        @query_string = query_string
+      end
 
-    def query_level?
-      !!@query
+      if string.include?("://")
+        @protocol, string = string.split(":", 2)
+        @protocol = '' if @protocol.empty?
+      end
+      if string.start_with?("//")
+        @protocol ||= ''
+        string = string[2..-1]
+      end
+      parse_authority(string)
     end
+
+    def parse_authority(string)
+      if string.include?("/")
+        string, @path = string.split("/", 2)
+        @path = "/" + @path
+      end
+
+      if string.include?("@")
+        userinfo, string = string.split("@", 2)
+        @username, @password = userinfo.split(":", 2)
+      end
+      self.host = string
+    end
+
   end
 
   class FormattingError < StandardError

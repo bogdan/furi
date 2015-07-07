@@ -180,6 +180,16 @@ describe Furi do
 
   end
 
+  describe ".build" do
+    it "should work correctly" do
+      expect(Furi.build(hostname: 'hello.com')).to eq('hello.com')
+      expect(Furi.build(hostname: 'hello.com', port: 88)).to eq('hello.com:88')
+      expect(Furi.build(hostname: 'hello.com', port: 88)).to eq('hello.com:88')
+      expect(Furi.build(schema: 'https', hostname: 'hello.com', port: 88)).to eq('https://hello.com:88')
+      expect(Furi.build(schema: 'http', hostname: 'hello.com', port: 80)).to eq('http://hello.com')
+    end
+  end
+
 
   describe "serialize" do
     it "should work" do
