@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Furi::VERSION
   spec.authors       = ["Bogdan Gusiev"]
   spec.email         = ["agresso@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Make URI processing as easy as it should be}
+  spec.description   = %q{The phylosophy of this gem is to make any URI modification or parsing operation to take only one line of code and never more}
   spec.homepage      = ""
   spec.license       = "MIT"
 
