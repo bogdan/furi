@@ -8,27 +8,27 @@ module Furi
     :path, :host, :port, :username, :password
   ]
   ALIASES = {
-    protocol: [:schema],
+    protocol: [:schema, :scheme],
     anchor: [:fragment],
     host: [:hostname]
   }
 
   DELEGATES = [:port!]
 
-  PORT_MAPPING = {
-    "http" => 80,
-    "https" => 443,
-    "ftp" => 21,
-    "tftp" => 69,
-    "sftp" => 22,
-    "ssh" => 22,
-    "svn+ssh" => 22,
-    "telnet" => 23,
-    "nntp" => 119,
-    "gopher" => 70,
-    "wais" => 210,
-    "ldap" => 389,
-    "prospero" => 1525
+  PROTOCOLS = {
+    "http" => {port: 80},
+    "https" => {port: 443, secure: true},
+    "ftp" => {port: 21},
+    "tftp" => {port: 69},
+    "sftp" => {port: 22},
+    "ssh" => {port: 22, secure: true},
+    "svn+ssh" => {port: 22, secure: true},
+    "telnet" => {port: 23},
+    "nntp" => {port: 119},
+    "gopher" => {port: 70},
+    "wais" => {port: 210},
+    "ldap" => {port: 389},
+    "prospero" => {port: 1525},
   }
 
   class Expressions
@@ -285,6 +285,21 @@ module Furi
       end
       result.join
     end
+    
+    def resource
+      [request, anchor].compact.join("#")
+    end
+    
+    def request
+      result = []
+      result << (path ? path : "/")
+      result << "?" << query_tokens if query_tokens.any?
+      result.join
+    end
+
+    def request_uri
+      request
+    end
 
     def query
       return @query if query_level?
@@ -353,7 +368,19 @@ module Furi
     end
 
     def default_port
-      protocol ? PORT_MAPPING[protocol] : nil
+      protocol && PROTOCOLS[protocol] ? PROTOCOLS[protocol][:port] : nil
+    end
+
+    def ssl?
+      secure?
+    end
+
+    def secure?
+      !!(protocol && PROTOCOLS[protocol][:secure])
+    end
+
+    def filename
+      path.split("/").last
     end
     
     protected

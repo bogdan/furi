@@ -73,6 +73,8 @@ describe Furi do
         query: {},
         path: nil,
         port: nil,
+        request: '/',
+        resource: '/',
       )
     end
 
@@ -83,6 +85,8 @@ describe Furi do
         path: '/posts/index.html',
         port: nil,
         protocol: 'http',
+        resource: '/posts/index.html?a=b#zz',
+        request: '/posts/index.html?a=b',
       )
     end
 
@@ -152,6 +156,17 @@ describe Furi do
       expect("gusiev.com?a[]=1&a[]=2&b[c]=1&b[d]=2").to have_parts(
         host: 'gusiev.com',
         query: {"a" => ["1","2"], "b" => {"c" => "1", "d" => "2"}},
+      )
+    end
+
+    it "find out protocol security" do
+      expect("gusiev.com:443").to have_parts(
+        host: 'gusiev.com',
+        :"secure?" => false
+      )
+      expect("https://gusiev.com:443").to have_parts(
+        host: 'gusiev.com',
+        :"secure?" => true
       )
     end
   end
