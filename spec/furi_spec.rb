@@ -69,7 +69,7 @@ describe Furi do
       expect("http://gusiev.com").to have_parts(
         protocol: 'http',
         hostname: 'gusiev.com',
-        query_string: nil,
+        query_string: "",
         query: {},
         path: nil,
         port: nil,
@@ -100,7 +100,7 @@ describe Furi do
         username: 'user',
         password: 'pass',
         hostname: 'gusiev.com',
-        query_string: nil,
+        query_string: "",
         anchor: nil,
       )
     end
@@ -110,7 +110,7 @@ describe Furi do
         username: 'user',
         password: nil,
         hostname: 'gusiev.com',
-        query_string: nil,
+        query_string: "",
         anchor: nil,
       )
     end
@@ -130,7 +130,7 @@ describe Furi do
         userinfo: 'user:pass',
         protocol: 'http',
         port: 80,
-        query_string: nil,
+        query_string: "",
       )
     end
     it "parses url with query" do
@@ -146,6 +146,12 @@ describe Furi do
         protocol: 'http',
         port: nil,
         "port!" => 80
+      )
+    end
+    it "parses nested query" do
+      expect("gusiev.com?a[]=1&a[]=2&b[c]=1&b[d]=2").to have_parts(
+        host: 'gusiev.com',
+        query: {"a" => ["1","2"], "b" => {"c" => "1", "d" => "2"}},
       )
     end
   end

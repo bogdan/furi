@@ -4,7 +4,7 @@ require "uri"
 module Furi
 
   PARTS =  [
-    :anchor, :protocol, :query_string,
+    :anchor, :protocol, :query_tokens,
     :path, :host, :port, :username, :password
   ]
   ALIASES = {
@@ -167,8 +167,8 @@ module Furi
     return params
   end
 
-  def self.serialize(string, namespace = nil)
-    serialize_tokens(string, namespace).join("&")
+  def self.serialize(query, namespace = nil)
+    serialize_tokens(query, namespace).join("&")
   end
 
   class QueryToken
@@ -214,6 +214,7 @@ module Furi
     end
 
     def initialize(argument)
+      @query_tokens = []
       case argument
       when String
         parse_uri_string(argument)
@@ -231,7 +232,23 @@ module Furi
 
     def merge(parts)
       parts.each do |part, value|
-        
+        case part.to_sym
+        when :query
+          merge_query(value)
+        else
+          send(:"#{part}=", value)
+        end
+      end
+    end
+
+    def merge_query(query)
+      case query
+      when Hash
+        self.query.merge!(parse_nested_query(query))
+      when String, Array
+        self.query_tokens += Furi.query_tokens(query)
+      else
+        raise ArgumentError
       end
     end
 
@@ -260,8 +277,8 @@ module Furi
       result << host if host
       result << ":" << port if explicit_port
       result << path
-      if query_string
-        result << "?" << query_string
+      if query_tokens.any?
+        result << "?" << query_tokens
       end
       if anchor
         result << "#" << anchor
@@ -271,19 +288,19 @@ module Furi
 
     def query
       return @query if query_level?
-      @query = Furi.parse_nested_query(@query_string)
+      @query = Furi.parse_nested_query(query_tokens)
     end
 
 
     def query=(value)
       @query = nil
+      @query_tokens = []
       case value
-      when String
-        @query_string = value
-      when Array
-        @query = Furi.query_tokens(value)
+      when String, Array
+        @query_tokens = Furi.query_tokens(value)
       when Hash
         @query = value
+        @query_tokens = Furi.serialize_tokens(value)
       when nil
       else
         raise ArgumentError, 'Query can only be Hash or String'
@@ -302,12 +319,17 @@ module Furi
       @port
     end
 
+    def query_tokens=(tokens)
+      @query = nil
+      @query_tokens = tokens
+    end
+
     def username=(username)
-      @username = username
+      @username = username.nil? ? nil : username.to_s
     end
 
     def password=(password)
-      @password = password
+      @password = password.nil? ? nil : password.to_s
     end
 
     def protocol=(protocol)
@@ -315,8 +337,11 @@ module Furi
     end
 
     def query_string
-      return @query_string unless query_level?
-      Furi.serialize(@query)
+      if query_level?
+        Furi.serialize(@query)
+      else
+        query_tokens.join("&")
+      end
     end
 
     def expressions
@@ -346,7 +371,7 @@ module Furi
       @anchor = @anchor.empty? ? nil : @anchor.join("#")
       if string.include?("?")
         string, query_string = string.split("?", 2)
-        @query_string = query_string
+        self.query_tokens = Furi.query_tokens(query_string)
       end
 
       if string.include?("://")
