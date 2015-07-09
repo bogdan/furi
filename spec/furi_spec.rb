@@ -181,6 +181,7 @@ describe Furi do
       expect(Furi.update("/index.html", hostname: 'gusiev.com')).to eq('gusiev.com/index.html')
       expect(Furi.update("http://www.gusiev.com/index.html", hostname: 'gusiev.com')).to eq('http://gusiev.com/index.html')
       expect(Furi.update("/index.html", hostname: 'gusiev.com')).to eq('gusiev.com/index.html')
+      expect(Furi.update("gusiev.com/index.html?a=b", hostname: nil)).to eq('/index.html?a=b')
     end
 
     it "updates port" do
