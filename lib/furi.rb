@@ -5,11 +5,12 @@ module Furi
 
   PARTS =  [
     :anchor, :protocol, :query_string,
-    :path, :hostname, :port, :username, :password
+    :path, :host, :port, :username, :password
   ]
   ALIASES = {
     protocol: [:schema],
     anchor: [:fragment],
+    host: [:hostname]
   }
 
   DELEGATES = [:port!]
@@ -243,24 +244,9 @@ module Furi
         nil
       end
     end
-
-    def host
-      if hostname
-        [hostname, explicit_port].compact.join(":")
-      elsif port
-        raise FormattingError, "can not build URI with port but without hostname"
-      else
-        nil
-      end
-    end
-
-    def host=(string)
-      @port = nil
-      if string.include?(":")
-        string, @port = string.split(":", 2)
-        @port = @port.to_i
-      end
-      @hostname = string.empty? ? nil : string
+    
+    def host=(host)
+      @host = host
     end
 
     def to_s
@@ -272,6 +258,7 @@ module Furi
         result << userinfo
       end
       result << host if host
+      result << ":" << port if explicit_port
       result << path
       if query_string
         result << "?" << query_string
@@ -303,14 +290,14 @@ module Furi
       end
     end
 
-    def hostname=(hostname)
-      @hostname = hostname
-    end
-
     def port=(port)
-      @port = port.to_i
-      if @port == 0
-        raise ArgumentError, "port should be an Integer > 0"
+      if port != nil
+        @port = port.to_i
+        if @port == 0
+          raise ArgumentError, "port should be an Integer > 0"
+        end
+      else
+        @port = nil
       end
       @port
     end
@@ -383,7 +370,9 @@ module Furi
         userinfo, string = string.split("@", 2)
         @username, @password = userinfo.split(":", 2)
       end
-      self.host = string
+      host, port = string.split(":", 2)
+      self.host = host if host
+      self.port = port if port
     end
 
   end
