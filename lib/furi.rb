@@ -280,7 +280,7 @@ module Furi
       result << ":" << port if explicit_port
       result << (host ? path : path!)
       if query_tokens.any?
-        result << "?" << query_tokens
+        result << "?" << query_tokens.join("&")
       end
       if anchor
         result << "#" << anchor
@@ -295,6 +295,10 @@ module Furi
 
     def path!
       path || ROOT
+    end
+
+    def host!
+      host || ""
     end
     
     def request
@@ -354,6 +358,10 @@ module Furi
       @password = password.nil? ? nil : password.to_s
     end
 
+    def path=(path)
+      @path = path.to_s
+    end
+
     def protocol=(protocol)
       @protocol = protocol ? protocol.gsub(%r{:/?/?\Z}, "") : nil
     end
@@ -388,6 +396,10 @@ module Furi
 
     def filename
       path.split("/").last
+    end
+
+    def default_web_port?
+      [PROTOCOLS['http'][:port], PROTOCOLS['https'][:port]].include?(port!) 
     end
     
     protected
