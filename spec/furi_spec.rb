@@ -72,6 +72,7 @@ describe Furi do
         query_string: "",
         query: {},
         path: nil,
+        path!: '/',
         port: nil,
         request: '/',
         resource: '/',
