@@ -31,6 +31,8 @@ module Furi
     "prospero" => {port: 1525},
   }
 
+  ROOT = '/'
+
   class Expressions
     attr_accessor :protocol
 
@@ -276,7 +278,7 @@ module Furi
       end
       result << host if host
       result << ":" << port if explicit_port
-      result << path
+      result << (host ? path : path!)
       if query_tokens.any?
         result << "?" << query_tokens
       end
@@ -285,14 +287,19 @@ module Furi
       end
       result.join
     end
+
     
     def resource
       [request, anchor].compact.join("#")
     end
+
+    def path!
+      path || ROOT
+    end
     
     def request
       result = []
-      result << (path ? path : "/")
+      result << path!
       result << "?" << query_tokens if query_tokens.any?
       result.join
     end
