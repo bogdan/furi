@@ -326,7 +326,6 @@ describe Furi do
 
     lambda { Furi.parse_nested_query("x[y]=1&x[y][][w]=2") }.
       should raise_error(TypeError, "expected Array (got String) for param `y'")
-
     end
 
   end
