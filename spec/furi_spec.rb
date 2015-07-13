@@ -142,7 +142,8 @@ describe Furi do
       expect("/index.html?a=b&c=d").to have_parts(
         host: nil,
         query_string: 'a=b&c=d',
-        query: {'a' => 'b', 'c' => 'd'}
+        query: {'a' => 'b', 'c' => 'd'},
+        request: '/index.html?a=b&c=d',
       )
     end
 

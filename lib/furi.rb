@@ -304,7 +304,7 @@ module Furi
       result << ":" << port if explicit_port
       result << (host ? path : path!)
       if query_tokens.any?
-        result << "?" << query_tokens.join("&")
+        result << "?" << query_string
       end
       if anchor
         result << "#" << anchor
@@ -316,7 +316,7 @@ module Furi
     def request
       result = []
       result << path!
-      result << "?" << query_tokens if query_tokens.any?
+      result << "?" << query_string if query_tokens.any?
       result.join
     end
 
