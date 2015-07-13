@@ -14,7 +14,7 @@ module Furi
     username: [:user],
   }
 
-  DELEGATES = [:port!]
+  DELEGATES = [:port!, :host!]
 
   PROTOCOLS = {
     "http" => {port: 80, ssl: false},
