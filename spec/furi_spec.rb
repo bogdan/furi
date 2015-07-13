@@ -228,7 +228,7 @@ describe Furi do
       expect(Furi.merge("//gusiev.com?a=1", query: {b: 2})).to eq('//gusiev.com?a=1&b=2')
       expect(Furi.merge("//gusiev.com?a=1", query: {a: 2})).to eq('//gusiev.com?a=2')
       expect(Furi.merge("//gusiev.com?a=1", query: [['a', 2], ['b', 3]])).to eq('//gusiev.com?a=1&a=2&b=3')
-      expect(Furi.merge("//gusiev.com?a=1", query: '?a=2')).to eq('//gusiev.com?a=1&a=2')
+      expect(Furi.merge("//gusiev.com?a=1&b=2", query: '?a=3')).to eq('//gusiev.com?a=1&b=2&a=3')
     end
   end
 
