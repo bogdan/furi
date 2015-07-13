@@ -10,7 +10,8 @@ module Furi
   ALIASES = {
     protocol: [:schema, :scheme],
     anchor: [:fragment],
-    host: [:hostname]
+    host: [:hostname],
+    username: [:user],
   }
 
   DELEGATES = [:port!]
@@ -122,7 +123,8 @@ module Furi
   end
 
   def self.query_tokens(query)
-    if query.is_a?(Array)
+    case query
+    when Enumerable, Enumerator
       query.map do |token|
         case token
         when QueryToken
@@ -135,10 +137,14 @@ module Furi
           raise ArgumentError, "Can not parse query token #{token.inspect}"
         end
       end
-    else
-      (query || '').split(/[&;] */n).map do |p|
+    when nil, ''
+      []
+    when String
+      query.gsub(/\A\?/, '').split(/[&;] */n).map do |p|
         QueryToken.parse(p)
       end
+    else
+      raise ArgumentError, "Can not parse #{query.inspect} query tokens"
     end
   end
 
@@ -266,8 +272,9 @@ module Furi
         self.query = self.query.merge(Furi::Utils.stringify_keys(query))
       when String, Array
         self.query_tokens += Furi.query_tokens(query)
+      when nil
       else
-        raise ArgumentError
+        raise ArgumentError, "#{query.inspect} can not be merged"
       end
     end
 
