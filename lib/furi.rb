@@ -73,6 +73,10 @@ module Furi
     parse(string).update(parts).to_s
   end
 
+  def self.merge(string, parts)
+    parse(string).merge(parts).to_s
+  end
+
   def self.serialize_tokens(query, namespace = nil)
     case query
     when Hash
@@ -198,6 +202,10 @@ module Furi
       [name, value]
     end
 
+    def ==(other)
+      to_s == other.to_s
+    end
+
     def to_s
       "#{::URI.encode_www_form_component(name.to_s)}=#{::URI.encode_www_form_component(value.to_s)}"
     end
@@ -249,12 +257,13 @@ module Furi
           send(:"#{part}=", value)
         end
       end
+      self
     end
 
     def merge_query(query)
       case query
       when Hash
-        self.query.merge!(parse_nested_query(query))
+        self.query = self.query.merge(Furi::Utils.stringify_keys(query))
       when String, Array
         self.query_tokens += Furi.query_tokens(query)
       else
@@ -296,18 +305,6 @@ module Furi
       result.join
     end
 
-    
-    def resource
-      [request, anchor].compact.join("#")
-    end
-
-    def path!
-      path || ROOT
-    end
-
-    def host!
-      host || ""
-    end
     
     def request
       result = []
@@ -420,6 +417,18 @@ module Furi
       WEB_PROTOCOL.include?(protocol)
     end
     
+    def resource
+      [request, anchor].compact.join("#")
+    end
+
+    def path!
+      path || ROOT
+    end
+
+    def host!
+      host || ""
+    end
+    
     protected
 
     def query_level?
@@ -477,5 +486,17 @@ module Furi
   end
 
   class FormattingError < StandardError
+  end
+
+  class Utils
+    class << self
+      def stringify_keys(hash)
+        result = {}
+        hash.each_key do |key|
+          result[key.to_s] = hash[key]
+        end
+        result
+      end
+    end
   end
 end

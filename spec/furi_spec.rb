@@ -222,6 +222,15 @@ describe Furi do
     end
   end
 
+  describe ".merge" do
+    it "should work" do
+      expect(Furi.merge("//gusiev.com", query: {a: 1})).to eq('//gusiev.com?a=1')
+      expect(Furi.merge("//gusiev.com?a=1", query: {b: 2})).to eq('//gusiev.com?a=1&b=2')
+      expect(Furi.merge("//gusiev.com?a=1", query: {a: 2})).to eq('//gusiev.com?a=2')
+      expect(Furi.merge("//gusiev.com?a=1", query: [['a', 2], ['b', 3]])).to eq('//gusiev.com?a=1&a=2&b=3')
+    end
+  end
+
 
   describe "serialize" do
     it "should work" do
