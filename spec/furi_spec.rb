@@ -163,11 +163,11 @@ describe Furi do
     it "find out protocol security" do
       expect("gusiev.com:443").to have_parts(
         host: 'gusiev.com',
-        :"secure?" => false
+        :"ssl" => false
       )
       expect("https://gusiev.com:443").to have_parts(
         host: 'gusiev.com',
-        :"secure?" => true
+        :"ssl" => true
       )
     end
   end
@@ -191,6 +191,13 @@ describe Furi do
       expect(Furi.update("gusiev.com/index.html", port: 33)).to eq('gusiev.com:33/index.html')
       expect(Furi.update("gusiev.com:33/index.html", port: 80)).to eq('gusiev.com:80/index.html')
       expect(Furi.update("http://gusiev.com:33/index.html", port: 80)).to eq('http://gusiev.com/index.html')
+    end
+
+    it "updates ssl" do
+      expect(Furi.update("http://gusiev.com", ssl: true)).to eq('https://gusiev.com')
+      expect(Furi.update("https://gusiev.com", ssl: true)).to eq('https://gusiev.com')
+      expect(Furi.update("https://gusiev.com", ssl: false)).to eq('http://gusiev.com')
+      expect(Furi.update("http://gusiev.com", ssl: false)).to eq('http://gusiev.com')
     end
     it "updates protocol" do
       expect(Furi.update("http://gusiev.com", protocol: '')).to eq('//gusiev.com')

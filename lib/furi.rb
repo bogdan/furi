@@ -16,13 +16,13 @@ module Furi
   DELEGATES = [:port!]
 
   PROTOCOLS = {
-    "http" => {port: 80},
-    "https" => {port: 443, secure: true},
+    "http" => {port: 80, ssl: false},
+    "https" => {port: 443, ssl: true},
     "ftp" => {port: 21},
     "tftp" => {port: 69},
     "sftp" => {port: 22},
-    "ssh" => {port: 22, secure: true},
-    "svn+ssh" => {port: 22, secure: true},
+    "ssh" => {port: 22, ssl: true},
+    "svn+ssh" => {port: 22, ssl: true},
     "telnet" => {port: 23},
     "nntp" => {port: 119},
     "gopher" => {port: 70},
@@ -30,6 +30,14 @@ module Furi
     "ldap" => {port: 389},
     "prospero" => {port: 1525},
   }
+
+  SSL_MAPPING = {
+    'http' => 'https',
+    'ftp' => 'sftp',
+    'svn' => 'svn+ssh',
+  }
+
+  WEB_PROTOCOL = ['http', 'https']
 
   ROOT = '/'
 
@@ -387,11 +395,15 @@ module Furi
     end
 
     def ssl?
-      secure?
+      !!(protocol && PROTOCOLS[protocol][:ssl])
     end
 
-    def secure?
-      !!(protocol && PROTOCOLS[protocol][:secure])
+    def ssl
+      ssl?
+    end
+
+    def ssl=(ssl)
+      self.protocol = find_protocol_for_ssl(ssl)
     end
 
     def filename
@@ -399,7 +411,13 @@ module Furi
     end
 
     def default_web_port?
-      [PROTOCOLS['http'][:port], PROTOCOLS['https'][:port]].include?(port!) 
+      WEB_PROTOCOL.any? do |web_protocol|
+        PROTOCOLS[web_protocol][:port] == port!
+      end
+    end
+
+    def web_protocol?
+      WEB_PROTOCOL.include?(protocol)
     end
     
     protected
@@ -444,6 +462,16 @@ module Furi
       host, port = string.split(":", 2)
       self.host = host if host
       self.port = port if port
+    end
+
+    def find_protocol_for_ssl(ssl)
+      if SSL_MAPPING.key?(protocol)
+        ssl ? SSL_MAPPING[protocol] : protocol
+      elsif SSL_MAPPING.values.include?(protocol)
+        ssl ? protocol : SSL_MAPPING.invert[protocol]
+      else
+        raise ArgumentError, "Can not specify ssl for #{protocol.inspect} protocol"
+      end
     end
 
   end
