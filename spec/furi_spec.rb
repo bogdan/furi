@@ -244,6 +244,18 @@ describe Furi do
     end
   end
 
+  describe "#clone" do
+    it "should work" do
+
+      uri = Furi.parse('http://gusiev.com')
+      expect(uri.clone == uri).to be_truthy
+      expect(uri.clone.merge_query([[:a, 1]]) == uri).to be_falsey
+      expect(Furi.parse('http://gusiev.com') == Furi.parse('https://gusiev.com')).to be_falsey
+      expect(Furi.parse('http://gusiev.com') == Furi.parse('http://gusiev.com')).to be_truthy
+      expect(Furi.parse('http://gusiev.com.ua') == Furi.parse('http://gusiev.com')).to be_falsey
+      expect(Furi.parse('http://gusiev.com?a=1&a=1') == Furi.parse('http://gusiev.com?a=1')).to be_falsey
+    end
+  end
 
   describe "serialize" do
     it "should work" do
