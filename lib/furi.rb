@@ -435,6 +435,10 @@ module Furi
     def host!
       host || ""
     end
+
+    def ==(other)
+      to_s == other.to_s
+    end
     
     protected
 
