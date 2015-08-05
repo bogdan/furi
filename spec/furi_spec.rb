@@ -238,13 +238,20 @@ describe Furi do
       expect(Furi.update("gusiev.com", protocol: 'http://')).to eq('http://gusiev.com')
     end
 
+    it "updates userinfo" do
+      expect(Furi.update("http://gusiev.com", userinfo: 'hello:world')).to eq('http://hello:world@gusiev.com')
+      expect(Furi.update("http://aa:bb@gusiev.com", userinfo: 'hello:world')).to eq('http://hello:world@gusiev.com')
+      expect(Furi.update("http://aa:bb@gusiev.com", userinfo: nil)).to eq('http://gusiev.com')
+      expect(Furi.update("http://aa@gusiev.com", userinfo: 'hello:world')).to eq('http://hello:world@gusiev.com')
+      
+    end
+
     it "updates authority" do
       expect(Furi.update("http://user:pass@gusiev.com:8080/index.html", authority: 'gusiev.com')).to eq('http://gusiev.com:8080/index.html')
     end
 
     it "updates request" do
       expect(Furi.update("http://gusiev.com:8080/index.html?c=d", request: '/blog.html?a=b')).to eq('http://gusiev.com:8080/blog.html?a=b')
-
     end
 
   end

@@ -56,11 +56,10 @@ Furi.parse("gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gu
      |                       |     |     |           |       \       |
   protocol             subdomain   | domainzone  directory    \   suffix
                                    |     |                     \___/  
-                            domainname   /                       |     
+                             domainname  /                       |     
                                     \___/                    filename 
                                       |                                 
                                     domain                   
-
 ```
 
 
