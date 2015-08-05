@@ -401,6 +401,10 @@ module Furi
       @password = password.nil? ? nil : password.to_s
     end
 
+    def userinfo=(userinfo)
+      @username, @password = userinfo.split(":", 2)
+    end
+
     def path=(path)
       @path = path.to_s
     end
@@ -513,7 +517,7 @@ module Furi
 
       if string.include?("@")
         userinfo, string = string.split("@", 2)
-        @username, @password = userinfo.split(":", 2)
+        self.userinfo = userinfo
       end
       host, port = string.split(":", 2)
       self.host = host if host
