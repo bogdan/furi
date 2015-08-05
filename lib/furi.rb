@@ -325,6 +325,9 @@ module Furi
 
     def hostinfo
       return host unless explicit_port?
+      if port && !host
+        raise FormattingError, "can not build URI with port but without host"
+      end
       [host, port].join(":")
     end
 

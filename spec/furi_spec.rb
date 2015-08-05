@@ -234,6 +234,7 @@ describe Furi do
       expect(Furi.update("https://gusiev.com", ssl: false)).to eq('http://gusiev.com')
       expect(Furi.update("http://gusiev.com", ssl: false)).to eq('http://gusiev.com')
     end
+
     it "updates protocol" do
       expect(Furi.update("http://gusiev.com", protocol: '')).to eq('//gusiev.com')
       expect(Furi.update("http://gusiev.com", protocol: nil)).to eq('gusiev.com')
@@ -249,7 +250,6 @@ describe Furi do
       expect(Furi.update("http://aa:bb@gusiev.com", userinfo: 'hello:world')).to eq('http://hello:world@gusiev.com')
       expect(Furi.update("http://aa:bb@gusiev.com", userinfo: nil)).to eq('http://gusiev.com')
       expect(Furi.update("http://aa@gusiev.com", userinfo: 'hello:world')).to eq('http://hello:world@gusiev.com')
-      
     end
 
     it "updates authority" do
@@ -272,6 +272,7 @@ describe Furi do
       expect(Furi.build(path: '/index.html', query: {a: 1, b: 2})).to eq('/index.html?a=1&b=2')
       expect(Furi.build(user: 'user', hostname: 'hello.com')).to eq('user@hello.com')
       expect(Furi.build(protocol: 'http', host: 'hello.com', port: 80)).to eq('http://hello.com')
+      expect(Furi.build(query: 'a=b')).to eq('/?a=b')
     end
   end
 
