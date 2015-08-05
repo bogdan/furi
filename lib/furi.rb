@@ -322,7 +322,7 @@ module Furi
       [host, port].join(":")
     end
 
-    def hostinfo=(info)
+    def hostinfo=(string)
       host, port = string.split(":", 2)
       self.host = host if host
       self.port = port if port
