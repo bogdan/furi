@@ -372,8 +372,9 @@ module Furi
       result.join
     end
 
-    def request_uri
-      request
+    def request=(string)
+      string = parse_anchor_and_query(string)
+      self.path = string
     end
 
     def query
@@ -389,8 +390,8 @@ module Furi
       when String, Array
         self.query_tokens = value
       when Hash
-        @query = value
         self.query_tokens = value
+        @query = value
       when nil
       else
         raise ArgumentError, 'Query can only be Hash or String'
@@ -522,12 +523,7 @@ module Furi
     end
 
     def parse_uri_string(string)
-      string, *anchor = string.split("#")
-      self.anchor = anchor.join("#")
-      if string.include?("?")
-        string, query_string = string.split("?", 2)
-        self.query_tokens = query_string
-      end
+      string = parse_anchor_and_query(string)
 
       if string.include?("://")
         protocol, string = string.split(":", 2)
@@ -572,6 +568,16 @@ module Furi
 
     def join_domain(tokens)
       tokens.any? ? tokens.join(".") : nil
+    end
+
+    def parse_anchor_and_query(string)
+      string, *anchor = string.split("#")
+      self.anchor = anchor.join("#")
+      if string.include?("?")
+        string, query_string = string.split("?", 2)
+        self.query_tokens = query_string
+      end
+      string
     end
 
   end

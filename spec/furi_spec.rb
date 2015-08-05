@@ -242,6 +242,11 @@ describe Furi do
       expect(Furi.update("http://user:pass@gusiev.com:8080/index.html", authority: 'gusiev.com')).to eq('http://gusiev.com:8080/index.html')
     end
 
+    it "updates request" do
+      expect(Furi.update("http://gusiev.com:8080/index.html?c=d", request: '/blog.html?a=b')).to eq('http://gusiev.com:8080/blog.html?a=b')
+
+    end
+
   end
 
   describe ".build" do
