@@ -322,6 +322,12 @@ module Furi
       [host, port].join(":")
     end
 
+    def hostinfo=(info)
+      host, port = string.split(":", 2)
+      self.host = host if host
+      self.port = port if port
+    end
+
     def authority
       return hostinfo unless userinfo
       [userinfo, hostinfo].join("@")
@@ -402,7 +408,9 @@ module Furi
     end
 
     def userinfo=(userinfo)
-      @username, @password = userinfo.split(":", 2)
+      username, password = userinfo.split(":", 2)
+      self.username = username
+      self.password = password
     end
 
     def path=(path)
@@ -519,9 +527,7 @@ module Furi
         userinfo, string = string.split("@", 2)
         self.userinfo = userinfo
       end
-      host, port = string.split(":", 2)
-      self.host = host if host
-      self.port = port if port
+      self.hostinfo = string
     end
 
     def find_protocol_for_ssl(ssl)
