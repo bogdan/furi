@@ -45,15 +45,15 @@ Furi.parse("gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gu
                          authority
                    __________|_________
                   /                    \
-             userinfo                hostinfo                          resource
-               __|___                ___|___                 __________|___________
-              /      \              /       \               /                      \
-         username  password       host      port          path            query   anchor
-           __|___   __|__    ______|______   |   __________|_________   ____|____   |
-          /      \ /     \  /             \ / \ /                    \ /         \ / \
-    foo://username:password@www.example.com:123/hello/world/there.html?name=ferret#foo
-    \_/                     \_/  \___/  \_/    \__________/ \     \__/
-     |                       |     |     |           |       \      |
+             userinfo                hostinfo                     resource
+               __|___                ___|___                ___________|____________
+              /      \              /       \              /                        \
+         username  password       host      port         path              query  anchor
+           __|___   __|__    ______|______   |  __________|_________     ____|____   |
+          /      \ /     \  /             \ / \/                    \   /         \ / \
+   http://username:password@www.example.com:80/hello/world/article.html?name=bogdan#info
+    \_/                     \_/  \___/  \_/    \__________/ \      \__/
+     |                       |     |     |           |       \       |
   protocol             subdomain   | domain_zone directory    \   suffix
                                    |     |                     \___/  
                             domain_name  /                       |     
