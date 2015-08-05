@@ -40,17 +40,20 @@ Furi.parse("gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gu
 
 ## Reference
 
-
 ```
-                         authority                                    resource         
-                   __________|_________                             ______|______
-                  /                    \                           /             \
-             userinfo                hostinfo                   request           \
-               __|___                ___|___                _______|________       \
-              /      \              /       \              /                \       \
-         username  password       host      port         path              query  anchor
-           __|___   __|__    ______|______   |  __________|_________     ____|____   |
-          /      \ /     \  /             \ / \/                    \   /         \ / \
+                location                                            resource       
+                    |                                                ___|___     
+             _______|_______                                        /       \     
+            /               \                                      /         \    
+           /             authority                             request        \   
+          /        __________|_________                           |            \  
+         /        /                    \                    ______|______       \
+        /    userinfo                hostinfo              /             \       \
+       /       __|___                ___|___              /               \       \
+      /       /      \              /       \            /                 \       \
+     /   username  password       host      port       path               query   anchor
+    /      __|___   __|__    ______|______   |  _________|__________     ____|____   |
+   /      /      \ /     \  /             \ / \/                    \   /         \ / \
    http://username:zhongguo@www.example.com:80/hello/world/article.html?name=bogdan#info
     \_/                     \_/  \___/  \_/    \__________/ \      \__/
      |                       |     |     |           |       \       |
