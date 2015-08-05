@@ -1,6 +1,9 @@
 # Furi
 
-TODO: Write a gem description
+Furi is a Friendly URI parsing library.
+Furi's philosophy is to make any operation possible in ONE LINE OF CODE.
+
+If there is an operation that takes more than one line of code to do with Furi, this is considered a terrible bug and you should create an issue.
 
 ## Installation
 
@@ -20,12 +23,16 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Here are basic 
+``` ruby
+Furi.port("http://gusiev.com") # => nil
+Furi.port!("http://gusiev.com") # => 80
+Furi.update("http://gusiev.com", protocol: 'https') # => "https://gusiev.com"
+Furi.update("http://gusie.com/index.html?source=google", email: "a@b.com")
+
+```
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/furi/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+Contribute in the way you want. Branch names and other bla-bla-bla doesn't matter.
+
