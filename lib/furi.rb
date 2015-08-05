@@ -390,7 +390,7 @@ module Furi
         self.query_tokens = value
       when Hash
         @query = value
-        @query_tokens = Furi.serialize_tokens(value)
+        self.query_tokens = value
       when nil
       else
         raise ArgumentError, 'Query can only be Hash or String'
