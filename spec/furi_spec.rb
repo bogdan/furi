@@ -76,6 +76,7 @@ describe Furi do
         port: nil,
         request: '/',
         resource: '/',
+        location: 'http://gusiev.com',
       )
     end
 
@@ -88,6 +89,7 @@ describe Furi do
         protocol: 'http',
         resource: '/posts/index.html?a=b#zz',
         request: '/posts/index.html?a=b',
+        location: 'http://gusiev.com',
       )
     end
 
@@ -97,6 +99,7 @@ describe Furi do
         hostname: nil,
         port: nil,
         protocol: nil,
+        location: nil,
       )
     end
 
@@ -107,6 +110,7 @@ describe Furi do
         hostname: 'gusiev.com',
         query_string: "",
         anchor: nil,
+        location: 'http://user:pass@gusiev.com',
       )
     end
 
@@ -117,6 +121,7 @@ describe Furi do
         hostname: 'gusiev.com',
         query_string: "",
         anchor: nil,
+        location: 'http://user@gusiev.com',
       )
     end
 
@@ -125,6 +130,7 @@ describe Furi do
       expect("http://gusiev.com#zz").to have_parts(
         schema: 'http',
         fragment: 'zz',
+        location: 'http://gusiev.com',
       )
     end
 

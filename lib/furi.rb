@@ -9,7 +9,7 @@ module Furi
   ]
   COMBINED_PARTS = [
     :hostinfo, :userinfo, :authority, :ssl, :domain, :domainname, 
-    :domainzone, :request
+    :domainzone, :request, :location
   ]
   PARTS = ESSENTIAL_PARTS + COMBINED_PARTS
 
@@ -354,10 +354,7 @@ module Furi
 
     def to_s
       result = []
-      if protocol
-        result.push(protocol.empty? ? "//" : "#{protocol}://")
-      end
-      result << authority
+      result << location
       result << (host ? path : path!)
       if query_tokens.any?
         result << "?" << query_string
@@ -367,7 +364,23 @@ module Furi
       end
       result.join
     end
-    
+
+    def location
+      if protocol
+        unless host
+          raise FormattingError, "can not build URI with protocol but without host"
+        end
+        [protocol.empty? ? "" : "#{protocol}:", authority].join("//")
+      else
+        authority
+      end
+    end
+
+    def location=(string)
+      string = parse_protocol(string)
+      self.authority = string
+    end
+
     def request
       result = []
       result << path!
@@ -528,14 +541,7 @@ module Furi
     def parse_uri_string(string)
       string = parse_anchor_and_query(string)
 
-      if string.include?("://")
-        protocol, string = string.split(":", 2)
-        self.protocol = protocol
-      end
-      if string.start_with?("//")
-        self.protocol ||= ''
-        string = string[2..-1]
-      end
+      string = parse_protocol(string)
 
       if string.include?("/")
         string, path = string.split("/", 2)
@@ -583,6 +589,18 @@ module Furi
       string
     end
 
+    def parse_protocol(string)
+      if string.include?("://")
+        protocol, string = string.split(":", 2)
+        self.protocol = protocol
+      end
+      if string.start_with?("//")
+        self.protocol ||= ''
+        string = string[2..-1]
+      end
+      string
+    end
+    
   end
 
   class FormattingError < StandardError
