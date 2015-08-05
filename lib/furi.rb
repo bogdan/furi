@@ -415,6 +415,9 @@ module Furi
 
     def path=(path)
       @path = path.to_s
+      unless @path.start_with?("/")
+        @path = "/" + @path
+      end
     end
 
     def protocol=(protocol)
@@ -519,8 +522,8 @@ module Furi
 
     def parse_authority(string)
       if string.include?("/")
-        string, @path = string.split("/", 2)
-        @path = "/" + @path
+        string, path = string.split("/", 2)
+        self.path = path
       end
 
       if string.include?("@")
