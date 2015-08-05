@@ -273,6 +273,13 @@ describe Furi do
       expect(Furi.build(user: 'user', hostname: 'hello.com')).to eq('user@hello.com')
       expect(Furi.build(protocol: 'http', host: 'hello.com', port: 80)).to eq('http://hello.com')
       expect(Furi.build(query: 'a=b')).to eq('/?a=b')
+
+      expect(->{
+        Furi.build(host: nil, port: 80)
+      }).to raise_error(Furi::FormattingError)
+      expect(->{
+        Furi.build(host: 'localhost', password: 'pass')
+      }).to raise_error(Furi::FormattingError)
     end
   end
 
