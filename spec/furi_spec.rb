@@ -172,6 +172,33 @@ describe Furi do
         :"ssl" => true
       )
     end
+
+    it "parses host into parts" do
+      expect("http://www.gusiev.com.ua").to have_parts(
+        domain: 'gusiev.com.ua',
+        subdomain: 'www',
+        domain_name: 'gusiev',
+        domain_zone: 'com.ua'
+      )
+      expect("http://www.com.ua").to have_parts(
+        domain: 'www.com.ua',
+        subdomain: nil,
+        domain_name: 'www',
+        domain_zone: 'com.ua'
+      )
+      expect("http://com.ua").to have_parts(
+        domain: 'com.ua',
+        subdomain: nil,
+        domain_name: 'com',
+        domain_zone: 'ua'
+      )
+      expect("http://www.blog.gusiev.com.ua").to have_parts(
+        domain: 'gusiev.com.ua',
+        subdomain: 'www.blog',
+        domain_name: 'gusiev',
+        domain_zone: 'com.ua'
+      )
+    end
   end
   describe ".update" do
     
@@ -209,6 +236,10 @@ describe Furi do
       expect(Furi.update("gusiev.com", protocol: 'http:')).to eq('http://gusiev.com')
       expect(Furi.update("gusiev.com", protocol: 'http:/')).to eq('http://gusiev.com')
       expect(Furi.update("gusiev.com", protocol: 'http://')).to eq('http://gusiev.com')
+    end
+
+    it "updates authority" do
+      expect(Furi.update("http://user:pass@gusiev.com:8080/index.html", authority: 'gusiev.com')).to eq('http://gusiev.com:8080/index.html')
     end
 
   end

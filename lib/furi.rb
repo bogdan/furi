@@ -3,10 +3,14 @@ require "uri"
 
 module Furi
 
-  PARTS =  [
+  ESSENTIAL_PARTS =  [
     :anchor, :protocol, :query_tokens,
     :path, :host, :port, :username, :password
   ]
+  COMBINED_PARTS = [
+    :hostinfo, :userinfo, :authority, :ssl, :domain, :domain_name, :domain_zone
+  ]
+  PARTS = ESSENTIAL_PARTS + COMBINED_PARTS
 
   ALIASES = {
     protocol: [:schema, :scheme],
@@ -228,7 +232,7 @@ module Furi
 
   class Uri
 
-    attr_reader(*PARTS)
+    attr_reader(*ESSENTIAL_PARTS)
 
     ALIASES.each do |origin, aliases|
       aliases.each do |aliaz|
@@ -333,6 +337,16 @@ module Furi
       [userinfo, hostinfo].join("@")
     end
 
+    def authority=(string)
+      if string.include?("@")
+        userinfo, string = string.split("@", 2)
+        self.userinfo = userinfo
+      else
+        self.userinfo = nil
+      end
+      self.hostinfo = string
+    end
+
     def to_s
       result = []
       if protocol
@@ -408,7 +422,7 @@ module Furi
     end
 
     def userinfo=(userinfo)
-      username, password = userinfo.split(":", 2)
+      username, password = (userinfo || "").split(":", 2)
       self.username = username
       self.password = password
     end
@@ -526,11 +540,7 @@ module Furi
         self.path = path
       end
 
-      if string.include?("@")
-        userinfo, string = string.split("@", 2)
-        self.userinfo = userinfo
-      end
-      self.hostinfo = string
+      self.authority = string
     end
 
     def find_protocol_for_ssl(ssl)
@@ -539,20 +549,21 @@ module Furi
       elsif SSL_MAPPING.values.include?(protocol)
         ssl ? protocol : SSL_MAPPING.invert[protocol]
       else
-        raise ArgumentError, "Can not specify ssl for #{protocol.inspect} protocol"
+        raise ArgumentError, "Can not specify SSL for #{protocol.inspect} protocol"
       end
     end
 
     def parsed_host
       tokens = host_tokens
       zone = []
+      subdomain = []
       while tokens.any? && tokens.last.size <= 3 && tokens.size >= 2
-        zone << tokens.pop
+        zone.unshift tokens.pop
       end
       while tokens.size > 1
         subdomain << tokens.shift
       end
-      domainname = tokes.first
+      domainname = tokens.first
       [join_domain(subdomain), domainname, join_domain(zone)]
     end
 
