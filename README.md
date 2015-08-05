@@ -42,12 +42,12 @@ Furi.parse("gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gu
 
 
 ```
-                         authority
-                   __________|_________
-                  /                    \
-             userinfo                hostinfo                      resource
-               __|___                ___|___                ___________|____________
-              /      \              /       \              /                        \
+                         authority                                    resource         
+                   __________|_________                             ______|______
+                  /                    \                           /             \
+             userinfo                hostinfo                   request           \
+               __|___                ___|___                _______|________       \
+              /      \              /       \              /                \       \
          username  password       host      port         path              query  anchor
            __|___   __|__    ______|______   |  __________|_________     ____|____   |
           /      \ /     \  /             \ / \/                    \   /         \ / \

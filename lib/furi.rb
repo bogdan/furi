@@ -8,7 +8,8 @@ module Furi
     :path, :host, :port, :username, :password
   ]
   COMBINED_PARTS = [
-    :hostinfo, :userinfo, :authority, :ssl, :domain, :domain_name, :domain_zone
+    :hostinfo, :userinfo, :authority, :ssl, :domain, :domain_name, 
+    :domain_zone, :request
   ]
   PARTS = ESSENTIAL_PARTS + COMBINED_PARTS
 
@@ -17,6 +18,7 @@ module Furi
     anchor: [:fragment],
     host: [:hostname],
     username: [:user],
+    request: [:request_uri]
   }
 
   DELEGATES = [:port!, :host!, :path!]
@@ -362,7 +364,6 @@ module Furi
       end
       result.join
     end
-
     
     def request
       result = []
@@ -386,7 +387,7 @@ module Furi
       @query_tokens = []
       case value
       when String, Array
-        @query_tokens = Furi.query_tokens(value)
+        self.query_tokens = value
       when Hash
         @query = value
         @query_tokens = Furi.serialize_tokens(value)
@@ -410,7 +411,7 @@ module Furi
 
     def query_tokens=(tokens)
       @query = nil
-      @query_tokens = tokens
+      @query_tokens = Furi.query_tokens(tokens)
     end
 
     def username=(username)
@@ -504,6 +505,11 @@ module Furi
     def inspect
       "#<#{self.class} #{to_s.inspect}>"
     end
+
+    def anchor=(string)
+      string = string.to_s
+      @anchor = string.empty? ? nil : string
+    end
     
     protected
 
@@ -516,25 +522,22 @@ module Furi
     end
 
     def parse_uri_string(string)
-      string, *@anchor = string.split("#")
-      @anchor = @anchor.empty? ? nil : @anchor.join("#")
+      string, *anchor = string.split("#")
+      self.anchor = anchor.join("#")
       if string.include?("?")
         string, query_string = string.split("?", 2)
-        self.query_tokens = Furi.query_tokens(query_string)
+        self.query_tokens = query_string
       end
 
       if string.include?("://")
-        @protocol, string = string.split(":", 2)
-        @protocol = '' if @protocol.empty?
+        protocol, string = string.split(":", 2)
+        self.protocol = protocol
       end
       if string.start_with?("//")
-        @protocol ||= ''
+        self.protocol ||= ''
         string = string[2..-1]
       end
-      parse_authority(string)
-    end
 
-    def parse_authority(string)
       if string.include?("/")
         string, path = string.split("/", 2)
         self.path = path
