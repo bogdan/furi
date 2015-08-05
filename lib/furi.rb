@@ -7,6 +7,7 @@ module Furi
     :anchor, :protocol, :query_tokens,
     :path, :host, :port, :username, :password
   ]
+
   ALIASES = {
     protocol: [:schema, :scheme],
     anchor: [:fragment],
@@ -14,7 +15,7 @@ module Furi
     username: [:user],
   }
 
-  DELEGATES = [:port!, :host!]
+  DELEGATES = [:port!, :host!, :path!]
 
   PROTOCOLS = {
     "http" => {port: 80, ssl: false},
@@ -214,6 +215,10 @@ module Furi
 
     def to_s
       "#{::URI.encode_www_form_component(name.to_s)}=#{::URI.encode_www_form_component(value.to_s)}"
+    end
+
+    def as_json
+      to_a
     end
 
     def inspect
@@ -438,6 +443,10 @@ module Furi
 
     def ==(other)
       to_s == other.to_s
+    end
+
+    def inspect
+      "#<#{self.class} #{to_s.inspect}>"
     end
     
     protected

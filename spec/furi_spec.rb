@@ -372,4 +372,8 @@ describe Furi do
 
   end
 
+  it "should support inspect" do
+    expect(Furi.parse('http://google.com').inspect).to eq("#<Furi::Uri \"http://google.com\">")
+  end
+
 end

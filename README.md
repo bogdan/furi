@@ -25,11 +25,17 @@ Or install it yourself as:
 
 Here are basic 
 ``` ruby
+Furi.host("http://gusiev.com") # => "gusiev.com"
 Furi.port("http://gusiev.com") # => nil
 Furi.port!("http://gusiev.com") # => 80
-Furi.update("http://gusiev.com", protocol: 'https') # => "https://gusiev.com"
-Furi.update("http://gusie.com/index.html?source=google", email: "a@b.com")
+Furi.update("http://gusiev.com", protocol: '') # => "//gusiev.com"
+Furi.update("http://gusiev.com?source=google", email: "a@b.com") 
+    # => "http://gusiev.com?email=a@b.com"
+Furi.merge("http://gusiev.com?source=google", email: "a@b.com") 
+    # => "http://gusiev.com?source=google&email=a@b.com"
 
+Furi.parse("gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gusiev") 
+    # => #<Furi::Uri "http://gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gusiev"> 
 ```
 
 ## Contributing
