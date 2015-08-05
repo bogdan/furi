@@ -221,6 +221,12 @@ describe Furi do
       expect(Furi.update("gusiev.com:33/index.html", port: 80)).to eq('gusiev.com:80/index.html')
       expect(Furi.update("http://gusiev.com:33/index.html", port: 80)).to eq('http://gusiev.com/index.html')
     end
+    it "updates path" do
+      expect(Furi.update("gusiev.com", path: '/article')).to eq('gusiev.com/article')
+      expect(Furi.update("gusiev.com/article1#header", path: '/article2')).to eq('gusiev.com/article2#header')
+      expect(Furi.update("gusiev.com/article#header", path: nil)).to eq('gusiev.com#header')
+      expect(Furi.update("gusiev.com/article1?a=b", path: 'article2')).to eq('gusiev.com/article2?a=b')
+    end
 
     it "updates ssl" do
       expect(Furi.update("http://gusiev.com", ssl: true)).to eq('https://gusiev.com')

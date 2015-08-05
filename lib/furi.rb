@@ -431,7 +431,7 @@ module Furi
 
     def path=(path)
       @path = path.to_s
-      unless @path.start_with?("/")
+      if !@path.empty? && !@path.start_with?("/") 
         @path = "/" + @path
       end
     end
