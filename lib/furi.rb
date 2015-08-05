@@ -8,8 +8,8 @@ module Furi
     :path, :host, :port, :username, :password
   ]
   COMBINED_PARTS = [
-    :hostinfo, :userinfo, :authority, :ssl, :domain, :domain_name, 
-    :domain_zone, :request
+    :hostinfo, :userinfo, :authority, :ssl, :domain, :domainname, 
+    :domainzone, :request
   ]
   PARTS = ESSENTIAL_PARTS + COMBINED_PARTS
 
@@ -303,11 +303,11 @@ module Furi
       @host = host
     end
 
-    def domain_zone
+    def domainzone
       parsed_host.last
     end
 
-    def domain_name
+    def domainname
       parsed_host[1]
     end
 

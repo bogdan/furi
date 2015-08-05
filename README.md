@@ -51,12 +51,12 @@ Furi.parse("gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gu
          username  password       host      port         path              query  anchor
            __|___   __|__    ______|______   |  __________|_________     ____|____   |
           /      \ /     \  /             \ / \/                    \   /         \ / \
-   http://username:password@www.example.com:80/hello/world/article.html?name=bogdan#info
+   http://username:zhongguo@www.example.com:80/hello/world/article.html?name=bogdan#info
     \_/                     \_/  \___/  \_/    \__________/ \      \__/
      |                       |     |     |           |       \       |
-  protocol             subdomain   | domain_zone directory    \   suffix
+  protocol             subdomain   | domainzone  directory    \   suffix
                                    |     |                     \___/  
-                            domain_name  /                       |     
+                            domainname   /                       |     
                                     \___/                    filename 
                                       |                                 
                                     domain                   

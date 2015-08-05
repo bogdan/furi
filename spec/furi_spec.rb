@@ -177,26 +177,26 @@ describe Furi do
       expect("http://www.gusiev.com.ua").to have_parts(
         domain: 'gusiev.com.ua',
         subdomain: 'www',
-        domain_name: 'gusiev',
-        domain_zone: 'com.ua'
+        domainname: 'gusiev',
+        domainzone: 'com.ua'
       )
       expect("http://www.com.ua").to have_parts(
         domain: 'www.com.ua',
         subdomain: nil,
-        domain_name: 'www',
-        domain_zone: 'com.ua'
+        domainname: 'www',
+        domainzone: 'com.ua'
       )
       expect("http://com.ua").to have_parts(
         domain: 'com.ua',
         subdomain: nil,
-        domain_name: 'com',
-        domain_zone: 'ua'
+        domainname: 'com',
+        domainzone: 'ua'
       )
       expect("http://www.blog.gusiev.com.ua").to have_parts(
         domain: 'gusiev.com.ua',
         subdomain: 'www.blog',
-        domain_name: 'gusiev',
-        domain_zone: 'com.ua'
+        domainname: 'gusiev',
+        domainzone: 'com.ua'
       )
     end
   end
