@@ -297,16 +297,42 @@ module Furi
       @host = host
     end
 
+    def domain_zone
+      parsed_host.last
+    end
+
+    def domain_name
+      parsed_host[1]
+    end
+
+    def domain
+      join_domain(parsed_host[1..2].flatten)
+    end
+
+    def subdomain
+      parsed_host.first
+    end
+
+    def host_tokens
+      host!.split(".")
+    end
+
+    def hostinfo
+      return host unless explicit_port?
+      [host, port].join(":")
+    end
+
+    def authority
+      return hostinfo unless userinfo
+      [userinfo, hostinfo].join("@")
+    end
+
     def to_s
       result = []
       if protocol
         result.push(protocol.empty? ? "//" : "#{protocol}://")
       end
-      if userinfo
-        result << userinfo
-      end
-      result << host if host
-      result << ":" << port if explicit_port
+      result << authority
       result << (host ? path : path!)
       if query_tokens.any?
         result << "?" << query_string
@@ -383,6 +409,7 @@ module Furi
       @protocol = protocol ? protocol.gsub(%r{:/?/?\Z}, "") : nil
     end
 
+
     def query_string
       if query_level?
         Furi.serialize(@query)
@@ -455,8 +482,8 @@ module Furi
       !!@query
     end
 
-    def explicit_port
-      port == default_port ? nil : port
+    def explicit_port?
+      port && port != default_port
     end
 
     def parse_uri_string(string)
@@ -501,6 +528,23 @@ module Furi
       else
         raise ArgumentError, "Can not specify ssl for #{protocol.inspect} protocol"
       end
+    end
+
+    def parsed_host
+      tokens = host_tokens
+      zone = []
+      while tokens.any? && tokens.last.size <= 3 && tokens.size >= 2
+        zone << tokens.pop
+      end
+      while tokens.size > 1
+        subdomain << tokens.shift
+      end
+      domainname = tokes.first
+      [join_domain(subdomain), domainname, join_domain(zone)]
+    end
+
+    def join_domain(tokens)
+      tokens.any? ? tokens.join(".") : nil
     end
 
   end

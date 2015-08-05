@@ -38,6 +38,36 @@ Furi.parse("gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gu
     # => #<Furi::Uri "http://gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gusiev"> 
 ```
 
+## Reference
+
+
+```
+                         authority
+                   __________|_________
+                  /                    \
+             userinfo                hostinfo                          resource
+               __|___                ___|___                 __________|___________
+              /      \              /       \               /                      \
+         username  password       host      port          path            query   anchor
+           __|___   __|__    ______|______   |   __________|_________   ____|____   |
+          /      \ /     \  /             \ / \ /                    \ /         \ / \
+    foo://username:password@www.example.com:123/hello/world/there.html?name=ferret#foo
+    \_/                     \_/  \___/  \_/    \__________/ \     \__/
+     |                       |     |     |           |       \      |
+  protocol             subdomain   | domain_zone directory    \   suffix
+                                   |     |                     \___/  
+                            domain_name  /                       |     
+                                    \___/                    filename 
+                                      |                                 
+                                    domain                   
+
+```
+
+
+Copied from [URI.js](http://medialize.github.io/URI.js/about-uris.html) parsing library 
+
+
+
 ## Contributing
 
 Contribute in the way you want. Branch names and other bla-bla-bla doesn't matter.
