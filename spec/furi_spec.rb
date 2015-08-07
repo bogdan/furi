@@ -266,6 +266,21 @@ describe Furi do
       expect(Furi.update("http://gusiev.com:8080/index.html?c=d", request: '/blog.html?a=b')).to eq('http://gusiev.com:8080/blog.html?a=b')
     end
 
+    it "updates domainzone" do
+      expect(Furi.update("http://gusiev.com:8080", domainzone: 'com.ua')).to eq('http://gusiev.com.ua:8080')
+      expect(Furi.update("http://gusiev.com.ua:8080", domainzone: 'com')).to eq('http://gusiev.com:8080')
+      expect(Furi.update("http://gusiev.com.ua:8080", domainzone: nil)).to eq('http://gusiev:8080')
+    end
+
+    it "updates domainname" do
+      expect(Furi.update("http://gusiev.com", domainname: 'google')).to eq('http://google.com')
+      expect(Furi.update("http://gusiev.com", domainname: nil)).to eq('http://com')
+    end
+    it "updates subdomain" do
+      expect(Furi.update("http://gusiev.com", subdomain: 'blog')).to eq('http://blog.gusiev.com')
+      expect(Furi.update("http://blog.gusiev.com", subdomain: nil)).to eq('http://gusiev.com')
+    end
+
   end
 
   describe ".build" do

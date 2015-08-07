@@ -300,27 +300,46 @@ module Furi
     end
     
     def host=(host)
-      @host = host
+      @host = case host
+              when Array
+                join_domain(host) 
+              when nil
+                nil
+              else
+                host.to_s
+              end
     end
 
     def domainzone
       parsed_host.last
     end
 
+    def domainzone=(new_zone)
+      self.host = [subdomain, domainname, new_zone]
+    end
+
     def domainname
       parsed_host[1]
+    end
+
+    def domainname=(new_domainname)
+      self.domain = join_domain([subdomain, new_domainname, domainzone])
     end
 
     def domain
       join_domain(parsed_host[1..2].flatten)
     end
 
+    def domain=(new_domain)
+      self.host= [subdomain, new_domain]
+    end
+
     def subdomain
       parsed_host.first
     end
 
-    def host_tokens
-      host!.split(".")
+    def subdomain=(new_subdomain)
+      self.host = [new_subdomain, domain]
     end
 
     def hostinfo
@@ -561,21 +580,8 @@ module Furi
       end
     end
 
-    def parsed_host
-      tokens = host_tokens
-      zone = []
-      subdomain = []
-      while tokens.any? && tokens.last.size <= 3 && tokens.size >= 2
-        zone.unshift tokens.pop
-      end
-      while tokens.size > 1
-        subdomain << tokens.shift
-      end
-      domainname = tokens.first
-      [join_domain(subdomain), domainname, join_domain(zone)]
-    end
-
     def join_domain(tokens)
+      tokens = tokens.compact
       tokens.any? ? tokens.join(".") : nil
     end
 
@@ -601,6 +607,24 @@ module Furi
       string
     end
     
+    def parsed_host
+      return @parsed_host if @parsed_host
+      tokens = host_tokens
+      zone = []
+      subdomain = []
+      while tokens.any? && tokens.last.size <= 3 && tokens.size >= 2
+        zone.unshift tokens.pop
+      end
+      while tokens.size > 1
+        subdomain << tokens.shift
+      end
+      domainname = tokens.first
+      @parsed_host = [join_domain(subdomain), domainname, join_domain(zone)]
+    end
+
+      def host_tokens
+        host.split(".")
+      end
   end
 
   class FormattingError < StandardError
@@ -617,4 +641,42 @@ module Furi
       end
     end
   end
+ 
+    class HostName
+
+      attr_reader :name
+
+      def initialize(name)
+        @name = name
+      end
+
+      def inspect
+        to_s.inspect
+      end
+
+      def ==(other)
+        to_s == other.to_s
+      end
+
+      def subdomain
+        parsed_host[0]
+      end
+
+      def domainname
+        parsed_host[1]
+      end
+
+      def domainzone
+        parsed_host[2]
+      end
+
+      def to_s
+        if @parsed_host
+          join_domain(@parsed_host)
+        else
+          @name
+        end
+      end
+
+    end
 end
