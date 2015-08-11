@@ -72,13 +72,17 @@ module Furi
   class << self
     (PARTS + ALIASES.values.flatten + DELEGATES).each do |part|
       define_method(part) do |string|
-        Uri.new(string).send(part)
+        Uri.new(string)[part]
       end
     end
   end
 
   def self.update(string, parts)
     parse(string).update(parts).to_s
+  end
+
+  def self.default(string, parts)
+    parse(string).default(parts).to_s
   end
 
   def self.merge(string, parts)
@@ -239,11 +243,11 @@ module Furi
     ALIASES.each do |origin, aliases|
       aliases.each do |aliaz|
         define_method(aliaz) do
-          send(origin)
+          self[origin]
         end
 
-        define_method(:"#{aliaz}=") do |*args|
-          send(:"#{origin}=", *args)
+        define_method(:"#{aliaz}=") do |arg|
+          self[origin] = arg
         end
       end
     end
@@ -260,7 +264,7 @@ module Furi
 
     def update(parts)
       parts.each do |part, value|
-        send(:"#{part}=", value)
+        self[part] = value
       end
       self
     end
@@ -271,10 +275,18 @@ module Furi
         when :query
           merge_query(value)
         else
-          send(:"#{part}=", value)
+          self[part] = value
         end
       end
       self
+    end
+
+    def default(parts)
+      parts.each do |part, value|
+        unless self[part]
+          self[part] = value
+        end
+      end
     end
 
     def merge_query(query)
@@ -545,6 +557,14 @@ module Furi
     def anchor=(string)
       string = string.to_s
       @anchor = string.empty? ? nil : string
+    end
+
+    def [](part)
+      send(part)
+    end
+
+    def []=(part, value)
+      send(:"#{part}=", value)
     end
     
     protected
