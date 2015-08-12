@@ -9,7 +9,7 @@ module Furi
   ]
   COMBINED_PARTS = [
     :hostinfo, :userinfo, :authority, :ssl, :domain, :domainname, 
-    :domainzone, :request, :location
+    :domainzone, :request, :location, :query
   ]
   PARTS = ESSENTIAL_PARTS + COMBINED_PARTS
 
@@ -81,8 +81,8 @@ module Furi
     parse(string).update(parts).to_s
   end
 
-  def self.default(string, parts)
-    parse(string).default(parts).to_s
+  def self.defaults(string, parts)
+    parse(string).defaults(parts).to_s
   end
 
   def self.merge(string, parts)
@@ -123,7 +123,8 @@ module Furi
     end
   end
 
-  def self.parse_nested_query(qs)
+  def self.parse_query(qs)
+    return Furi::Utils.stringify_keys(qs) if qs.is_a?(Hash)
 
     params = {}
     query_tokens(qs).each do |token|
@@ -272,7 +273,7 @@ module Furi
     def merge(parts)
       parts.each do |part, value|
         case part.to_sym
-        when :query
+        when :query, :query_tokens
           merge_query(value)
         else
           self[part] = value
@@ -281,12 +282,22 @@ module Furi
       self
     end
 
-    def default(parts)
+    def defaults(parts)
       parts.each do |part, value|
-        unless self[part]
-          self[part] = value
+        case part.to_sym
+        when :query, :query_tokens
+          Furi.parse_query(value).each do |key, default_value|
+            unless query.key?(key)
+              query[key] = default_value
+            end
+          end
+        else
+          unless self[part]
+            self[part] = value
+          end
         end
       end
+      self
     end
 
     def merge_query(query)
@@ -426,7 +437,7 @@ module Furi
 
     def query
       return @query if query_level?
-      @query = Furi.parse_nested_query(query_tokens)
+      @query = Furi.parse_query(query_tokens)
     end
 
 
@@ -484,7 +495,7 @@ module Furi
     end
 
     def protocol=(protocol)
-      @protocol = protocol ? protocol.gsub(%r{:/?/?\Z}, "") : nil
+      @protocol = protocol ? protocol.gsub(%r{:?/?/?\Z}, "") : nil
     end
 
 
@@ -655,7 +666,8 @@ module Furi
       def stringify_keys(hash)
         result = {}
         hash.each_key do |key|
-          result[key.to_s] = hash[key]
+          value = hash[key]
+          result[key.to_s] = value.is_a?(Hash) ? stringify_keys(value) : value
         end
         result
       end
