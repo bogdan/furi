@@ -682,41 +682,41 @@ module Furi
     end
   end
  
-    class HostName
+  class HostName
 
-      attr_reader :name
+    attr_reader :name
 
-      def initialize(name)
-        @name = name
-      end
-
-      def inspect
-        to_s.inspect
-      end
-
-      def ==(other)
-        to_s == other.to_s
-      end
-
-      def subdomain
-        parsed_host[0]
-      end
-
-      def domainname
-        parsed_host[1]
-      end
-
-      def domainzone
-        parsed_host[2]
-      end
-
-      def to_s
-        if @parsed_host
-          join_domain(@parsed_host)
-        else
-          @name
-        end
-      end
-
+    def initialize(name)
+      @name = name
     end
+
+    def inspect
+      to_s.inspect
+    end
+
+    def ==(other)
+      to_s == other.to_s
+    end
+
+    def subdomain
+      parsed_host[0]
+    end
+
+    def domainname
+      parsed_host[1]
+    end
+
+    def domainzone
+      parsed_host[2]
+    end
+
+    def to_s
+      if @parsed_host
+        join_domain(@parsed_host)
+      else
+        @name
+      end
+    end
+
+  end
 end
