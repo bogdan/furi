@@ -69,7 +69,7 @@ describe Furi do
       expect("http://gusiev.com").to have_parts(
         protocol: 'http',
         hostname: 'gusiev.com',
-        query_string: "",
+        query_string: nil,
         query: {},
         path: nil,
         path!: '/',
@@ -108,7 +108,7 @@ describe Furi do
         username: 'user',
         password: 'pass',
         hostname: 'gusiev.com',
-        query_string: "",
+        query_string: nil,
         anchor: nil,
         location: 'http://user:pass@gusiev.com',
       )
@@ -119,7 +119,7 @@ describe Furi do
         username: 'user',
         password: nil,
         hostname: 'gusiev.com',
-        query_string: "",
+        query_string: nil,
         anchor: nil,
         location: 'http://user@gusiev.com',
       )
@@ -141,7 +141,7 @@ describe Furi do
         userinfo: 'user:pass',
         protocol: 'http',
         port: 80,
-        query_string: "",
+        query_string: nil,
       )
     end
     it "parses url with query" do
@@ -315,18 +315,22 @@ describe Furi do
   end
 
   describe ".defaults" do
-    it "should work" do
+    it "should set protocol" do
       expect(Furi.defaults("gusiev.com", protocol: 'http')).to eq('http://gusiev.com')
       expect(Furi.defaults("gusiev.com", protocol: '//')).to eq('//gusiev.com')
       expect(Furi.defaults("//gusiev.com", protocol: 'http')).to eq('//gusiev.com')
       expect(Furi.defaults("https://gusiev.com", protocol: 'http')).to eq('https://gusiev.com')
+    end
+    it "should set host" do
       expect(Furi.defaults("https://gusiev.com", subdomain: 'www')).to eq('https://www.gusiev.com')
       expect(Furi.defaults("https://blog.gusiev.com", subdomain: 'www')).to eq('https://blog.gusiev.com')
       expect(Furi.defaults("/index.html", host: 'gusiev.com', protocol: 'http')).to eq('http://gusiev.com/index.html')
+    end
+    it "should set query" do
       expect(Furi.defaults("gusiev.com?a=1", query: {a: 2})).to eq('gusiev.com?a=1')
       expect(Furi.defaults("gusiev.com?a=1", query: {b: 2})).to eq('gusiev.com?a=1&b=2')
-      expect(Furi.merge("//gusiev.com?a=1", query: {a: 2})).to eq('//gusiev.com?a=2')
-      #expect(Furi.merge("//gusiev.com?a=1", query: [['a', 2], ['b', 3]])).to eq('//gusiev.com?a=1&a=2&b=3')
+      expect(Furi.defaults("//gusiev.com?a=1", query_string: 'b=2')).to eq('//gusiev.com?a=1')
+      expect(Furi.defaults("//gusiev.com", query_string: 'b=2')).to eq('//gusiev.com?b=2')
       #expect(Furi.merge("//gusiev.com?a=1&b=2", query: '?a=3')).to eq('//gusiev.com?a=1&b=2&a=3')
     end
   end

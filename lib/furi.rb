@@ -503,8 +503,16 @@ module Furi
       if query_level?
         Furi.serialize(@query)
       else
-        query_tokens.join("&")
+        query_tokens.any? ? query_tokens.join("&") : nil
       end
+    end
+
+    def query_string!
+      query_string || ""
+    end
+
+    def query_string=(string)
+      self.query_tokens = string.to_s
     end
 
     def expressions
