@@ -205,6 +205,14 @@ describe Furi do
         domainzone: 'com.ua'
       )
     end
+
+    it "parses double # in anchor" do
+      expect("/index?a=1#c#d").to have_parts(
+        anchor: 'c#d',
+        query_string: "a=1",
+        path: '/index',
+      )
+    end
   end
   describe ".update" do
     
@@ -232,6 +240,12 @@ describe Furi do
       expect(Furi.update("gusiev.com/article1#header", path: '/article2')).to eq('gusiev.com/article2#header')
       expect(Furi.update("gusiev.com/article#header", path: nil)).to eq('gusiev.com#header')
       expect(Furi.update("gusiev.com/article1?a=b", path: 'article2')).to eq('gusiev.com/article2?a=b')
+    end
+    it "updates resource" do
+      expect(Furi.update("gusiev.com", resource: '/article?a=1#hello')).to eq('gusiev.com/article?a=1#hello')
+      expect(Furi.update("gusiev.com/article1#header", resource: '/article2')).to eq('gusiev.com/article2')
+      expect(Furi.update("gusiev.com/article#header", resource: nil)).to eq('gusiev.com')
+      expect(Furi.update("gusiev.com/article1?a=b", resource: 'article2')).to eq('gusiev.com/article2')
     end
 
     it "updates ssl" do

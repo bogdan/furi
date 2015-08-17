@@ -134,6 +134,9 @@ module Furi
     return params
   end
 
+  def zz
+
+  end
   def self.query_tokens(query)
     case query
     when Enumerable, Enumerator
@@ -557,6 +560,14 @@ module Furi
       [request, anchor].compact.join("#")
     end
 
+    def resource=(value)
+      self.anchor = nil
+      self.query_tokens = []
+      self.path = nil
+      value = parse_anchor_and_query(value)
+      self.path = value
+    end
+
     def path!
       path || ROOT
     end
@@ -625,9 +636,10 @@ module Furi
     end
 
     def parse_anchor_and_query(string)
+      string ||= ''
       string, *anchor = string.split("#")
       self.anchor = anchor.join("#")
-      if string.include?("?")
+      if string && string.include?("?")
         string, query_string = string.split("?", 2)
         self.query_tokens = query_string
       end
