@@ -295,6 +295,12 @@ describe Furi do
       expect(Furi.update("http://blog.gusiev.com", subdomain: nil)).to eq('http://gusiev.com')
     end
 
+    it "updates location" do
+      expect(Furi.update("/index.html", location: 'http://gusiev.com')).to eq('http://gusiev.com/index.html')
+      expect(Furi.update("/index.html", location: 'http://gusiev.com/')).to eq('http://gusiev.com/index.html')
+      expect(Furi.update("/index.html", location: 'gusiev.com:80')).to eq('gusiev.com:80/index.html')
+    end
+
   end
 
   describe ".build" do
