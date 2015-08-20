@@ -461,7 +461,7 @@ module Furi
     end
 
     def port=(port)
-      if port != nil
+      if port != nil && port != ''
         @port = port.to_i
         if @port == 0
           raise ArgumentError, "port should be an Integer > 0"

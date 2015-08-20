@@ -213,6 +213,22 @@ describe Furi do
         path: '/index',
       )
     end
+    it "parses blank port with protocol" do
+      expect("http://gusiev.com:/hello").to have_parts(
+        path: '/hello',
+        port: nil,
+        host: 'gusiev.com',
+        protocol: 'http',
+      )
+    end
+    it "parses blank port without protocol" do
+      expect("gusiev.com:/hello").to have_parts(
+        path: '/hello',
+        port: nil,
+        host: 'gusiev.com',
+        protocol: nil,
+      )
+    end
   end
   describe ".update" do
     
@@ -298,7 +314,7 @@ describe Furi do
     it "updates location" do
       expect(Furi.update("/index.html", location: 'http://gusiev.com')).to eq('http://gusiev.com/index.html')
       expect(Furi.update("/index.html", location: 'http://gusiev.com/')).to eq('http://gusiev.com/index.html')
-      expect(Furi.update("/index.html", location: 'gusiev.com:80')).to eq('gusiev.com:80/index.html')
+      expect(Furi.update("gusiev.com:433/index.html", location: 'gusiev.com:80')).to eq('gusiev.com:80/index.html')
     end
 
   end
