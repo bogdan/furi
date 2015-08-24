@@ -55,7 +55,7 @@ Furi.parse("gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gu
     /      __|___   __|__    ______|______   |  _________|__________     ____|____   |
    /      /      \ /     \  /             \ / \/                    \   /         \ / \
    http://username:zhongguo@www.example.com:80/hello/world/article.html?name=bogdan#info
-    \_/                     \_/  \___/  \_/    \__________/ \      \__/
+    \_/                     \_/  \___/  \_/    \__________/ \       \_/
      |                       |     |     |           |       \       |
   protocol             subdomain   | domainzone  directory    \  extension
                                    |     |                     \_____/  
