@@ -358,6 +358,8 @@ describe Furi do
       expect(Furi.build(schema: 'https', hostname: 'hello.com', port: 88)).to eq('https://hello.com:88')
       expect(Furi.build(schema: 'http', hostname: 'hello.com', port: 80)).to eq('http://hello.com')
       expect(Furi.build(path: '/index.html', query: {a: 1, b: 2})).to eq('/index.html?a=1&b=2')
+      expect(Furi.build(path: '/', host: 'gusiev.com', query: {a: 1})).to eq('gusiev.com/?a=1')
+      expect(Furi.build(path: '/articles/', host: 'gusiev.com', query: {a: 1})).to eq('gusiev.com/articles/?a=1')
       expect(Furi.build(user: 'user', hostname: 'hello.com')).to eq('user@hello.com')
       expect(Furi.build(protocol: 'http', host: 'hello.com', port: 80)).to eq('http://hello.com')
       expect(Furi.build(query: 'a=b')).to eq('/?a=b')
