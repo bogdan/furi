@@ -144,6 +144,16 @@ describe Furi do
         query_string: nil,
       )
     end
+
+    it "parses custom port" do
+      expect("http://gusiev.com:8080").to have_parts(
+        hostname: 'gusiev.com',
+        hostinfo: 'gusiev.com:8080',
+        protocol: 'http',
+        port: 8080,
+      )
+
+    end
     it "parses url with query" do
       expect("/index.html?a=b&c=d").to have_parts(
         host: nil,
