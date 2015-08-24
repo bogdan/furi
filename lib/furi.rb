@@ -502,6 +502,21 @@ module Furi
       @protocol = protocol ? protocol.gsub(%r{:?/?/?\Z}, "") : nil
     end
 
+    def filename
+      path_tokens.last
+    end
+
+    def filename=(name)
+      self.path = path_tokens.tap do |p|
+        p[p.size-1] = name
+      end.join("/")
+    end
+
+    def path_tokens
+      path.split("/")
+
+    end
+
 
     def query_string
       if query_level?
@@ -615,7 +630,7 @@ module Furi
 
       if string.include?("/")
         string, path = string.split("/", 2)
-        self.path = path
+        self.path = "/" + path
       end
 
       self.authority = string

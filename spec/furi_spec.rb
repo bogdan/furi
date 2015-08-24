@@ -80,6 +80,14 @@ describe Furi do
       )
     end
 
+    it "parses URL with root path" do
+      expect("http://gusiev.com/?a=b").to have_parts(
+        hostname: 'gusiev.com',
+        path: '/',
+        path!: '/',
+        request: '/?a=b',
+      )
+    end
     it "extracts anchor" do
       expect("http://gusiev.com/posts/index.html?a=b#zz").to have_parts(
         anchor: 'zz',
@@ -90,6 +98,7 @@ describe Furi do
         resource: '/posts/index.html?a=b#zz',
         request: '/posts/index.html?a=b',
         location: 'http://gusiev.com',
+        filename: 'index.html',
       )
     end
 
@@ -260,6 +269,18 @@ describe Furi do
       expect(Furi.update("gusiev.com/index.html", port: 33)).to eq('gusiev.com:33/index.html')
       expect(Furi.update("gusiev.com:33/index.html", port: 80)).to eq('gusiev.com:80/index.html')
       expect(Furi.update("http://gusiev.com:33/index.html", port: 80)).to eq('http://gusiev.com/index.html')
+    end
+    it "updates filename" do
+      expect(Furi.update("gusiev.com", filename: 'article')).to eq('gusiev.com/article')
+      expect(Furi.update("gusiev.com/article1#header", filename: '/article2')).to eq('gusiev.com/article2#header')
+      expect(Furi.update("gusiev.com/article#header", filename: nil)).to eq('gusiev.com#header')
+      expect(Furi.update("gusiev.com/article1?a=b", path: 'article2')).to eq('gusiev.com/article2?a=b')
+    end
+    it "updates resource" do
+      expect(Furi.update("gusiev.com", resource: '/article?a=1#hello')).to eq('gusiev.com/article?a=1#hello')
+      expect(Furi.update("gusiev.com/article1#header", resource: '/article2')).to eq('gusiev.com/article2')
+      expect(Furi.update("gusiev.com/article#header", resource: nil)).to eq('gusiev.com')
+      expect(Furi.update("gusiev.com/article1?a=b", resource: 'article2')).to eq('gusiev.com/article2')
     end
     it "updates path" do
       expect(Furi.update("gusiev.com", path: '/article')).to eq('gusiev.com/article')

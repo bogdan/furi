@@ -57,10 +57,10 @@ Furi.parse("gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gu
    http://username:zhongguo@www.example.com:80/hello/world/article.html?name=bogdan#info
     \_/                     \_/  \___/  \_/    \__________/ \      \__/
      |                       |     |     |           |       \       |
-  protocol             subdomain   | domainzone  directory    \   suffix
-                                   |     |                     \___/  
-                             domainname  /                       |     
-                                    \___/                    filename 
+  protocol             subdomain   | domainzone  directory    \  extension
+                                   |     |                     \_____/  
+                             domainname  /                        |     
+                                    \___/                     filename 
                                       |                                 
                                     domain                   
 ```
