@@ -513,8 +513,7 @@ module Furi
     end
 
     def path_tokens
-      path.split("/")
-
+      path.split("/", -1)
     end
 
 
