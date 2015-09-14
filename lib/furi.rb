@@ -424,6 +424,7 @@ module Furi
     def location=(string)
       string ||= ""
       string  = string.gsub(%r(/\Z), '')
+      self.protocol = nil
       string = parse_protocol(string)
       self.authority = string
     end
