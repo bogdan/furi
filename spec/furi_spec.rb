@@ -401,7 +401,7 @@ describe Furi do
       expect(Furi.defaults("gusiev.com?a=1", query: {b: 2})).to eq('gusiev.com?a=1&b=2')
       expect(Furi.defaults("//gusiev.com?a=1", query_string: 'b=2')).to eq('//gusiev.com?a=1')
       expect(Furi.defaults("//gusiev.com", query_string: 'b=2')).to eq('//gusiev.com?b=2')
-      #expect(Furi.merge("//gusiev.com?a=1&b=2", query: '?a=3')).to eq('//gusiev.com?a=1&b=2&a=3')
+      expect(Furi.merge("//gusiev.com?a=1&b=2", query: '?a=3')).to eq('//gusiev.com?a=1&b=2&a=3')
     end
   end
 
