@@ -346,6 +346,7 @@ describe Furi do
       expect(Furi.update("/index.html", location: 'http://gusiev.com')).to eq('http://gusiev.com/index.html')
       expect(Furi.update("/index.html", location: 'http://gusiev.com/')).to eq('http://gusiev.com/index.html')
       expect(Furi.update("gusiev.com:433/index.html", location: 'gusiev.com:80')).to eq('gusiev.com:80/index.html')
+      expect(Furi.update("gusiev.com:433/index.html", location: nil)).to eq('/index.html')
     end
 
   end
