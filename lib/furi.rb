@@ -378,8 +378,8 @@ module Furi
 
     def hostinfo=(string)
       host, port = string.split(":", 2)
-      self.host = host if host
-      self.port = port if port
+      self.host = host
+      self.port = port
     end
 
     def authority

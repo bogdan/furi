@@ -320,7 +320,7 @@ describe Furi do
     end
 
     it "updates authority" do
-      expect(Furi.update("http://user:pass@gusiev.com:8080/index.html", authority: 'gusiev.com')).to eq('http://gusiev.com:8080/index.html')
+      expect(Furi.update("http://user:pass@gusiev.com:8080/index.html", authority: 'gusiev.com')).to eq('http://gusiev.com/index.html')
     end
 
     it "updates request" do
