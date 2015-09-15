@@ -252,7 +252,7 @@ describe Furi do
     it "parses 0 port as blank port" do
       expect("http://gusiev.com:0/hello").to have_parts(
         path: '/hello',
-        port: nil,
+        port: 0,
         host: 'gusiev.com',
         protocol: 'http',
       )

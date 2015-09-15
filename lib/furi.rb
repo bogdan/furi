@@ -39,7 +39,6 @@ module Furi
     "prospero" => {port: 1525},
   }
 
-  NIL_PORTS = [nil, '', 0, '0']
 
   SSL_MAPPING = {
     'http' => 'https',
@@ -470,13 +469,25 @@ module Furi
     end
 
     def port=(port)
-      if (port.is_a?(String) && port.empty?) || NIL_PORTS.include?(port)
-        @port = nil
-      else
-        @port = port.to_i
-        if @port == 0
-          raise ArgumentError, "port should be an Integer"
+      @port = case port
+      when String
+        if port.empty?
+          nil
+        else
+          unless port =~ /\A\s*\d+\s*\z/
+            raise ArgumentError, "port should be an Integer >= 0"
+          end
+          port.to_i
         end
+      when Integer
+        if port < 0
+          raise ArgumentError, "port should be an Integer >= 0"
+        end
+        port
+      when nil
+        nil
+      else
+        raise ArgumentError, "can not parse port: #{port.inspect}"
       end
       @port
     end
