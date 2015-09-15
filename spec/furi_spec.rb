@@ -249,6 +249,15 @@ describe Furi do
       )
     end
 
+    it "parses 0 port as blank port" do
+      expect("http://gusiev.com:0/hello").to have_parts(
+        path: '/hello',
+        port: nil,
+        host: 'gusiev.com',
+        protocol: 'http',
+      )
+    end
+
     describe "ipv6 host" do
       it "parses host and port" do
         expect("http://[2406:da00:ff00::6b14:8d43]:8080/").to have_parts(
