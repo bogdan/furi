@@ -329,7 +329,7 @@ module Furi
       @host = case host
               when Array
                 join_domain(host) 
-              when nil
+              when "", nil
                 nil
               else
                 host.to_s
@@ -377,9 +377,14 @@ module Furi
     end
 
     def hostinfo=(string)
-      host, port = string.split(":", 2)
-      self.host = host
-      self.port = port
+      if match = string.match(/\A(.+):(.*)\z/)
+        self.host, self.port = match.captures
+      else
+        self.host = string
+        self.port = nil
+      end
+      #self.host = host
+      #self.port = port
     end
 
     def authority

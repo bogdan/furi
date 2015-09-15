@@ -248,6 +248,25 @@ describe Furi do
         protocol: nil,
       )
     end
+
+    describe "ipv6 host" do
+      it "parses host and port" do
+        expect("http://[2406:da00:ff00::6b14:8d43]:8080/").to have_parts(
+          path: '/',
+          port: 8080,
+          host: '[2406:da00:ff00::6b14:8d43]',
+          protocol: 'http',
+        )
+      end
+      it "parses host and nil port" do
+        expect("http://[2406:da00:ff00::6b14:8d43]:/hello").to have_parts(
+          path: '/hello',
+          port: nil,
+          host: '[2406:da00:ff00::6b14:8d43]',
+          protocol: 'http',
+        )
+      end
+    end
   end
   describe ".update" do
     
