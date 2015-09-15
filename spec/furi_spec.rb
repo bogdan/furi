@@ -297,6 +297,9 @@ describe Furi do
       expect(Furi.update("gusiev.com/index.html", port: 33)).to eq('gusiev.com:33/index.html')
       expect(Furi.update("gusiev.com:33/index.html", port: 80)).to eq('gusiev.com:80/index.html')
       expect(Furi.update("http://gusiev.com:33/index.html", port: 80)).to eq('http://gusiev.com/index.html')
+      expect(Furi.update("http://gusiev.com:33/index.html", port: nil)).to eq('http://gusiev.com/index.html')
+      expect(Furi.update("http://gusiev.com:33/index.html", port: 0)).to eq('http://gusiev.com:0/index.html')
+      expect(Furi.update("http://gusiev.com:33/index.html", port: '')).to eq('http://gusiev.com/index.html')
     end
     it "updates filename" do
       expect(Furi.update("gusiev.com", filename: 'article')).to eq('gusiev.com/article')
