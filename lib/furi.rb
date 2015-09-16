@@ -135,9 +135,6 @@ module Furi
     return params
   end
 
-  def zz
-
-  end
   def self.query_tokens(query)
     case query
     when Enumerable, Enumerator
