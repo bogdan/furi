@@ -314,7 +314,7 @@ describe Furi do
     it "updates filename" do
       expect(Furi.update("gusiev.com", filename: 'article')).to eq('gusiev.com/article')
       expect(Furi.update("gusiev.com/article1#header", filename: '/article2')).to eq('gusiev.com/article2#header')
-      expect(Furi.update("gusiev.com/article#header", filename: nil)).to eq('gusiev.com#header')
+      expect(Furi.update("gusiev.com/article#header", filename: nil)).to eq('gusiev.com/#header')
       expect(Furi.update("gusiev.com/article1?a=b", path: 'article2')).to eq('gusiev.com/article2?a=b')
     end
     it "updates resource" do
@@ -454,6 +454,7 @@ describe Furi do
       expect(Furi.parse('http://gusiev.com') == Furi.parse('http://gusiev.com')).to be_truthy
       expect(Furi.parse('http://gusiev.com.ua') == Furi.parse('http://gusiev.com')).to be_falsey
       expect(Furi.parse('http://gusiev.com?a=1&a=1') == Furi.parse('http://gusiev.com?a=1')).to be_falsey
+      #expect(Furi.parse('http://gUSiev.cOm?A=1') == Furi.parse('http://gusiev.com?a=1')).to be_falsey
     end
   end
 

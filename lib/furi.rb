@@ -528,12 +528,20 @@ module Furi
     end
 
     def filename=(name)
+      unless name
+        return unless path
+      else
+        name = name.gsub(%r{\A/}, "")
+      end
+
       self.path = path_tokens.tap do |p|
-        p[p.size-1] = name
+        filename_index = [p.size-1, 0].max
+        p[filename_index] = name
       end.join("/")
     end
 
     def path_tokens
+      return [] unless path
       path.split("/", -1)
     end
 
