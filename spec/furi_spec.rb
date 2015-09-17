@@ -268,11 +268,21 @@ describe Furi do
         )
       end
       it "parses host and nil port" do
+
         expect("http://[2406:da00:ff00::6b14:8d43]:/hello").to have_parts(
           path: '/hello',
           port: nil,
           host: '[2406:da00:ff00::6b14:8d43]',
           protocol: 'http',
+        )
+      end
+
+      it "parses host without protocol and port" do
+        expect("[2406:da00:ff00::6b14:8d43]/hello").to have_parts(
+          path: '/hello',
+          port: nil,
+          host: '[2406:da00:ff00::6b14:8d43]',
+          protocol: nil,
         )
       end
     end

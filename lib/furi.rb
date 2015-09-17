@@ -378,11 +378,15 @@ module Furi
     end
 
     def hostinfo=(string)
-      if match = string.match(/\A(.+):(.*)\z/)
-        self.host, self.port = match.captures
-      else
+      if string.match(%r{\A\[.+\]\z}) #ipv6 host
         self.host = string
-        self.port = nil
+      else
+        if match = string.match(/\A(.+):(.*)\z/)
+          self.host, self.port = match.captures
+        else
+          self.host = string
+          self.port = nil
+        end
       end
       #self.host = host
       #self.port = port
