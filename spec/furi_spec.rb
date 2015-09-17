@@ -516,7 +516,6 @@ describe Furi do
       Furi.query_tokens(" =").should eq [[" ", ''], ]
       Furi.query_tokens("= ").should eq [["", ' '], ]
       Furi.query_tokens("a=1&b").should eq [['a', 1], ["b", nil]]
-      Furi.query_tokens("a=1").should eq [['a', 1]]
     end
   end
 

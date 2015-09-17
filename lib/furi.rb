@@ -398,8 +398,6 @@ module Furi
           self.port = nil
         end
       end
-      #self.host = host
-      #self.port = port
     end
 
     def authority
