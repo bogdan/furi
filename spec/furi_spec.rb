@@ -505,6 +505,21 @@ describe Furi do
     end
   end
 
+  describe ".query_tokens" do
+    it "should work" do
+      Furi.query_tokens("a=1").should eq [['a', 1]]
+      Furi.query_tokens("a=1&b=2").should eq [['a', 1], ['b', 2]]
+      Furi.query_tokens("a=1&").should eq [['a', 1], ["", nil]]
+      Furi.query_tokens("&a=1").should eq [["", nil], ['a', 1]]
+      Furi.query_tokens("=").should eq [["", ""], ]
+      Furi.query_tokens(" ").should eq [[" ", nil], ]
+      Furi.query_tokens(" =").should eq [[" ", ''], ]
+      Furi.query_tokens("= ").should eq [["", ' '], ]
+      Furi.query_tokens("a=1&b").should eq [['a', 1], ["b", nil]]
+      Furi.query_tokens("a=1").should eq [['a', 1]]
+    end
+  end
+
   describe "parse_query" do
     it "should work" do
     Furi.parse_query("foo").

@@ -139,21 +139,12 @@ module Furi
     case query
     when Enumerable, Enumerator
       query.map do |token|
-        case token
-        when QueryToken
-          token
-        when String
-          QueryToken.parse(token)
-        when Array
-          QueryToken.new(*token)
-        else
-          raise ArgumentError, "Can not parse query token #{token.inspect}"
-        end
+        QueryToken.parse(token)
       end
     when nil, ''
       []
     when String
-      query.gsub(/\A\?/, '').split(/[&;] */n).map do |p|
+      query.gsub(/\A\?/, '').split(/[&;] */n, -1).map do |p|
         QueryToken.parse(p)
       end
     else
@@ -208,8 +199,24 @@ module Furi
     attr_reader :name, :value
 
     def self.parse(token)
-      k,v = token.split('=', 2).map { |s| ::URI.decode_www_form_component(s) }
-      new(k,v)
+      case token
+      when QueryToken
+        token
+      when String
+        key, value = token.split('=', 2).map do |s|
+          ::URI.decode_www_form_component(s)
+        end
+        key ||= ""
+        new(key, value)
+      when Array
+        QueryToken.new(*token)
+      else
+        raise_parse_error(token)
+      end
+    end
+
+    def self.raise_parse_error(token)
+      raise ArgumentError, "Can not parse query token #{token.inspect}"
     end
 
     def initialize(name, value)
@@ -222,11 +229,17 @@ module Furi
     end
 
     def ==(other)
+      other = self.class.parse(other)
+      return false unless other
       to_s == other.to_s
     end
 
     def to_s
-      "#{::URI.encode_www_form_component(name.to_s)}=#{::URI.encode_www_form_component(value.to_s)}"
+      encoded_key = ::URI.encode_www_form_component(name.to_s)
+      
+      encoded_key ? 
+        "#{encoded_key}=#{::URI.encode_www_form_component(value.to_s)}" :
+        encoded_key
     end
 
     def as_json
