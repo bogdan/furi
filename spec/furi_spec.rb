@@ -313,8 +313,19 @@ describe Furi do
     end
     it "updates filename" do
       expect(Furi.update("gusiev.com", filename: 'article')).to eq('gusiev.com/article')
+      expect(Furi.update("gusiev.com/", filename: 'article')).to eq('gusiev.com/article')
       expect(Furi.update("gusiev.com/article1#header", filename: '/article2')).to eq('gusiev.com/article2#header')
       expect(Furi.update("gusiev.com/article#header", filename: nil)).to eq('gusiev.com/#header')
+      expect(Furi.update("gusiev.com/articles/article1?a=b", filename: 'article2')).to eq('gusiev.com/articles/article2?a=b')
+      expect(Furi.update("/articles/article1?a=b", filename: '/article2')).to eq('/articles/article2?a=b')
+      expect(Furi.update("/articles/article1.xml?a=b", filename: 'article2.html')).to eq('/articles/article2.html?a=b')
+    end
+    it "updates filename" do
+      expect(->{
+       Furi.update("gusiev.com/", extension: 'xml')
+      }).to raise_error(Furi::FormattingError)
+      expect(Furi.update("gusiev.com/article1#header", extension: 'html')).to eq('gusiev.com/article1.html#header')
+      expect(Furi.update("gusiev.com/article.html?header", extension: nil)).to eq('gusiev.com/article?header')
       expect(Furi.update("gusiev.com/article1?a=b", path: 'article2')).to eq('gusiev.com/article2?a=b')
     end
     it "updates resource" do
@@ -474,7 +485,7 @@ describe Furi do
   describe "serialize" do
     it "should work" do
       expect({a: 'b'}).to serialize_as("a=b")
-      expect(a: nil).to serialize_as("a=")
+      expect(a: nil).to serialize_as("a")
       expect(nil).to serialize_as("")
       expect(b: 2, a: 1).to serialize_as("b=2&a=1")
       expect(a: {b: {c: []}}).to serialize_as("")
@@ -484,7 +495,7 @@ describe Furi do
       expect(q: "cowboy hat?").to serialize_as("q=cowboy+hat%3F")
       expect(a: true).to serialize_as("a=true")
       expect(a: false).to serialize_as("a=false")
-      expect(a: [nil, 0]).to serialize_as("a%5B%5D=&a%5B%5D=0")
+      expect(a: [nil, 0]).to serialize_as("a%5B%5D&a%5B%5D=0")
       expect({f: ["b", 42, "your base"] }).to serialize_as("f%5B%5D=b&f%5B%5D=42&f%5B%5D=your+base")
       expect({"a[]" => 1 }).to serialize_as("a%5B%5D=1")
       expect({"a[b]" => [1] }).to serialize_as(["a[b][]=1"])

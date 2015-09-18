@@ -237,7 +237,7 @@ module Furi
     def to_s
       encoded_key = ::URI.encode_www_form_component(name.to_s)
       
-      encoded_key ? 
+      !value.nil? ? 
         "#{encoded_key}=#{::URI.encode_www_form_component(value.to_s)}" :
         encoded_key
     end
@@ -538,6 +538,28 @@ module Furi
       path_tokens.last
     end
 
+    def extension
+      return nil unless filename
+      file_tokens.size > 1 ? file_tokens.last : nil
+    end
+
+    def extension=(string)
+      tokens = file_tokens
+      case tokens.size
+      when 0
+        raise FormattingError, "can not assign extension when there is no filename"
+      when 1
+        tokens.push(string)
+      else
+        if string
+          tokens[-1] = string
+        else
+          tokens.pop
+        end
+      end
+      self.filename = tokens.join(".")
+    end
+
     def filename=(name)
       unless name
         return unless path
@@ -598,7 +620,7 @@ module Furi
     end
 
     def filename
-      path.split("/").last
+      path && path.split("/").last
     end
 
     def default_web_port?
@@ -653,6 +675,10 @@ module Furi
     end
     
     protected
+
+    def file_tokens
+      filename ? filename.split('.') : []
+    end
 
     def query_level?
       !!@query
