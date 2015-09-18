@@ -65,6 +65,36 @@ describe Furi do
 
 
   describe "#parse" do
+
+    it "parses URL with everything" do
+      expect("http://user:pass@www.gusiev.com:8080/articles/index.html?a=1&b=2#header").to have_parts(
+        location: 'http://user:pass@www.gusiev.com:8080',
+        protocol: 'http',
+        schema: 'http',
+        authority: 'user:pass@www.gusiev.com:8080',
+        hostinfo: 'www.gusiev.com:8080',
+        host: 'www.gusiev.com',
+        subdomain: 'www',
+        domain: 'gusiev.com',
+        domainzone: 'com',
+        port: 8080,
+        userinfo: 'user:pass',
+        username: 'user',
+        password: 'pass',
+
+        resource: '/articles/index.html?a=1&b=2#header',
+        path: "/articles/index.html",
+        filename: 'index.html',
+        extension: 'html',
+        query_string: "a=1&b=2",
+        query_tokens: [['a', '1'], ['b', '2']],
+        query: {'a' => '1', 'b' => '2'},
+        request: '/articles/index.html?a=1&b=2',
+        anchor: 'header',
+        fragment: 'header',
+      )
+      
+    end
     it "parses URL without path" do
       expect("http://gusiev.com").to have_parts(
         protocol: 'http',
@@ -99,6 +129,7 @@ describe Furi do
         request: '/posts/index.html?a=b',
         location: 'http://gusiev.com',
         filename: 'index.html',
+        extension: 'html',
       )
     end
 
@@ -109,6 +140,18 @@ describe Furi do
         port: nil,
         protocol: nil,
         location: nil,
+        extension: 'html',
+      )
+    end
+
+    it "works with path ending at slash" do
+      
+      expect("/posts/").to have_parts(
+        path: '/posts/',
+        directory: '/posts',
+        filename: nil,
+        'filename!' =>  '',
+        extension: nil,
       )
     end
 
@@ -137,8 +180,6 @@ describe Furi do
 
     it "supports aliases" do
       expect("http://gusiev.com#zz").to have_parts(
-        schema: 'http',
-        fragment: 'zz',
         location: 'http://gusiev.com',
       )
     end
@@ -311,6 +352,15 @@ describe Furi do
       expect(Furi.update("http://gusiev.com:33/index.html", port: 0)).to eq('http://gusiev.com:0/index.html')
       expect(Furi.update("http://gusiev.com:33/index.html", port: '')).to eq('http://gusiev.com/index.html')
     end
+    it "updates directory" do
+      expect(Furi.update("gusiev.com", directory: 'articles')).to eq('gusiev.com/articles')
+      expect(Furi.update("gusiev.com/", directory: 'articles')).to eq('gusiev.com/articles')
+      expect(Furi.update("gusiev.com/index#header", directory: '/posts')).to eq('gusiev.com/posts/index#header')
+      expect(Furi.update("gusiev.com/articles/#header", directory: nil)).to eq('gusiev.com/#header')
+      expect(Furi.update("gusiev.com/articles/index?a=b", directory: 'posts')).to eq('gusiev.com/posts/index?a=b')
+      expect(Furi.update("/articles/index?a=b", directory: '/posts')).to eq('/posts/index?a=b')
+      expect(Furi.update("/articles/index.html?a=b", directory: '/posts/')).to eq('/posts/index.html?a=b')
+    end
     it "updates filename" do
       expect(Furi.update("gusiev.com", filename: 'article')).to eq('gusiev.com/article')
       expect(Furi.update("gusiev.com/", filename: 'article')).to eq('gusiev.com/article')
@@ -320,7 +370,7 @@ describe Furi do
       expect(Furi.update("/articles/article1?a=b", filename: '/article2')).to eq('/articles/article2?a=b')
       expect(Furi.update("/articles/article1.xml?a=b", filename: 'article2.html')).to eq('/articles/article2.html?a=b')
     end
-    it "updates filename" do
+    it "updates extension" do
       expect(->{
        Furi.update("gusiev.com/", extension: 'xml')
       }).to raise_error(Furi::FormattingError)

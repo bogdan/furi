@@ -9,7 +9,8 @@ module Furi
   ]
   COMBINED_PARTS = [
     :hostinfo, :userinfo, :authority, :ssl, :domain, :domainname, 
-    :domainzone, :request, :location, :query
+    :domainzone, :request, :location, :query,
+    :extension, :filename
   ]
   PARTS = ESSENTIAL_PARTS + COMBINED_PARTS
 
@@ -534,8 +535,17 @@ module Furi
       @protocol = protocol ? protocol.gsub(%r{:?/?/?\Z}, "") : nil
     end
 
-    def filename
-      path_tokens.last
+
+    def directory
+      path_tokens[0..-2].join("/")
+    end
+
+    def directory=(string)
+      string ||= "/"
+      if filename && string !~ %r{/\z}
+        string += '/'
+      end
+      self.path = string + filename.to_s
     end
 
     def extension
@@ -620,7 +630,12 @@ module Furi
     end
 
     def filename
-      path && path.split("/").last
+      result = path_tokens.last
+      result == "" ? nil : result
+    end
+
+    def filename!
+      filename || ''
     end
 
     def default_web_port?
