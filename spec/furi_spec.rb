@@ -519,7 +519,7 @@ describe Furi do
   describe ".query_tokens" do
     it "should work" do
       Furi.query_tokens("a=1").should eq [['a', 1]]
-      Furi.query_tokens("a=1&b=2").should eq [['a', 1], ['b', 2]]
+      Furi.query_tokens("a==1").should eq [['a', '=1']]
       Furi.query_tokens("a=1&").should eq [['a', 1], ["", nil]]
       Furi.query_tokens("&a=1").should eq [["", nil], ['a', 1]]
       Furi.query_tokens("=").should eq [["", ""], ]
@@ -527,6 +527,8 @@ describe Furi do
       Furi.query_tokens(" =").should eq [[" ", ''], ]
       Furi.query_tokens("= ").should eq [["", ' '], ]
       Furi.query_tokens("a=1&b").should eq [['a', 1], ["b", nil]]
+      Furi.query_tokens("a=&b").should eq [['a', ''], ['b', nil]]
+      Furi.query_tokens("a=1&b=2").should eq [['a', 1], ['b', 2]]
     end
   end
 
