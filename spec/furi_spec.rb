@@ -374,9 +374,9 @@ describe Furi do
       expect(->{
        Furi.update("gusiev.com/", extension: 'xml')
       }).to raise_error(Furi::FormattingError)
-      expect(Furi.update("gusiev.com/article1#header", extension: 'html')).to eq('gusiev.com/article1.html#header')
+      expect(Furi.update("gusiev.com/article#header", extension: 'html')).to eq('gusiev.com/article.html#header')
       expect(Furi.update("gusiev.com/article.html?header", extension: nil)).to eq('gusiev.com/article?header')
-      expect(Furi.update("gusiev.com/article1?a=b", path: 'article2')).to eq('gusiev.com/article2?a=b')
+      expect(Furi.update("gusiev.com/article.xml?a=b", extension: 'html')).to eq('gusiev.com/article.html?a=b')
     end
     it "updates resource" do
       expect(Furi.update("gusiev.com", resource: '/article?a=1#hello')).to eq('gusiev.com/article?a=1#hello')
@@ -389,12 +389,6 @@ describe Furi do
       expect(Furi.update("gusiev.com/article1#header", path: '/article2')).to eq('gusiev.com/article2#header')
       expect(Furi.update("gusiev.com/article#header", path: nil)).to eq('gusiev.com#header')
       expect(Furi.update("gusiev.com/article1?a=b", path: 'article2')).to eq('gusiev.com/article2?a=b')
-    end
-    it "updates resource" do
-      expect(Furi.update("gusiev.com", resource: '/article?a=1#hello')).to eq('gusiev.com/article?a=1#hello')
-      expect(Furi.update("gusiev.com/article1#header", resource: '/article2')).to eq('gusiev.com/article2')
-      expect(Furi.update("gusiev.com/article#header", resource: nil)).to eq('gusiev.com')
-      expect(Furi.update("gusiev.com/article1?a=b", resource: 'article2')).to eq('gusiev.com/article2')
     end
 
     it "updates ssl" do

@@ -243,7 +243,7 @@ module Furi
         encoded_key
     end
 
-    def as_json
+    def as_json(options = nil)
       to_a
     end
 
