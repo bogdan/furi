@@ -24,18 +24,48 @@ Or install it yourself as:
 ## Usage
 
 Here are basic 
+
+### Utility Methods
+
+I'll say it again: any operation should take exacly one line of code!
+
 ``` ruby
 Furi.host("http://gusiev.com") # => "gusiev.com"
 Furi.port("http://gusiev.com") # => nil
 Furi.port!("http://gusiev.com") # => 80
+
 Furi.update("http://gusiev.com", protocol: '') # => "//gusiev.com"
-Furi.update("http://gusiev.com?source=google", email: "a@b.com") 
+Furi.update("http://gusiev.com?source=google", query: {email: "a@b.com"}) 
     # => "http://gusiev.com?email=a@b.com"
-Furi.merge("http://gusiev.com?source=google", email: "a@b.com") 
+Furi.merge("http://gusiev.com?source=google", query: {email: "a@b.com"}) 
     # => "http://gusiev.com?source=google&email=a@b.com"
 
-Furi.parse("gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gusiev") 
-    # => #<Furi::Uri "http://gusiev.com/index.html?person[first_name]=Bogdan&person[last_name]=Gusiev"> 
+Furi.build(protocol: '//', host: 'gusiev.com', path: '/assets/application.js') 
+    # => "//gusiev.com/assets/application.js"
+
+```
+
+### Working with Object
+
+``` ruby
+uri = Furi.parse("gusiev.com") 
+    # => #<Furi::Uri "gusiev.com"> 
+
+uri.port     # => nil
+uri.port!    # => 80
+uri.path     # => nil
+uri.path!    # => '/'
+uri.subdomain ||= 'www'
+```
+
+### Processing Query String
+
+``` ruby
+uri = Furi.parse("/?person[first_name]=Bogdan&person[last_name]=Gusiev")
+uri.query_tokens # => [person[first_name]=Bogdan, person[last_name]=Gusiev]
+uri.query # => {person: {first_name: Bogdan, last_name: 'Gusiev'}}
+uri.merge_query(person: {email: 'a@b.com'})
+    # => {person: {email: 'a@b.com', first_name: Bogdan, last_name: 'Gusiev'}}
 ```
 
 ## Reference

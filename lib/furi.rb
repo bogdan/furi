@@ -22,7 +22,7 @@ module Furi
     request: [:request_uri]
   }
 
-  DELEGATES = [:port!, :host!, :path!]
+  DELEGATES = [:port!, :host!, :path!, :home_page?]
 
   PROTOCOLS = {
     "http" => {port: 80, ssl: false},
@@ -460,6 +460,10 @@ module Furi
       self.path = string
     end
 
+    def home_page?
+      path! == "/" || path! == "/index.html"
+    end
+
     def query
       return @query if query_level?
       @query = Furi.parse_query(query_tokens)
@@ -662,6 +666,10 @@ module Furi
 
     def path!
       path || ROOT
+    end
+
+    def resource!
+      [request]
     end
 
     def host!

@@ -92,6 +92,7 @@ describe Furi do
         request: '/articles/index.html?a=1&b=2',
         anchor: 'header',
         fragment: 'header',
+        home_page?: false,
       )
       
     end
@@ -107,6 +108,7 @@ describe Furi do
         request: '/',
         resource: '/',
         location: 'http://gusiev.com',
+        home_page?: true,
       )
     end
 
@@ -116,6 +118,7 @@ describe Furi do
         path: '/',
         path!: '/',
         request: '/?a=b',
+        home_page?: true,
       )
     end
     it "extracts anchor" do
@@ -211,6 +214,7 @@ describe Furi do
         query_string: 'a=b&c=d',
         query: {'a' => 'b', 'c' => 'd'},
         request: '/index.html?a=b&c=d',
+        home_page?: true,
       )
     end
 
