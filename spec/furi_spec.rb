@@ -144,6 +144,7 @@ describe Furi do
         protocol: nil,
         location: nil,
         extension: 'html',
+        home_page?: false,
       )
     end
 
@@ -155,6 +156,7 @@ describe Furi do
         filename: nil,
         'filename!' =>  '',
         extension: nil,
+        home_page: false,
       )
     end
 
