@@ -43,7 +43,7 @@ Furi.merge("http://gusiev.com?source=google", query: {email: "a@b.com"})
 Furi.build(protocol: '//', host: 'gusiev.com', path: '/assets/application.js') 
     # => "//gusiev.com/assets/application.js"
 
-Furi.default("http://gusiev.com", subdomain: 'www') # => "http://www.gusiev.com"
+Furi.defaults("http://gusiev.com", subdomain: 'www') # => "http://www.gusiev.com"
 ```
 
 ### Working with Object
