@@ -697,6 +697,12 @@ module Furi
       send(:"#{part}=", value)
     end
     
+    def rfc3986?
+      uri = to_s
+      !!(uri.match(URI::RFC3986_Parser::RFC3986_Parser) || 
+         uri.match(URI::RFC3986_Parser::RFC3986_relative_ref))
+    end
+
     protected
 
     def file_tokens
