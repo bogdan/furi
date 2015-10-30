@@ -113,5 +113,6 @@ Copied from [URI.js](http://medialize.github.io/URI.js/about-uris.html) parsing 
 
 ## Contributing
 
-Contribute in the way you want. Branch names and other bla-bla-bla doesn't matter.
+Contribute in the way you want. Branch names and other bla-bla-bla do not matter.
+
 
