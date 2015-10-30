@@ -109,7 +109,9 @@ Copied from [URI.js](http://medialize.github.io/URI.js/about-uris.html) parsing 
 
 ## TODO
 
-* rfc3986
+* rfc3986 validation
+* mailto protocol
+* escaping in path
 
 ## Contributing
 
