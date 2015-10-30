@@ -156,7 +156,7 @@ describe Furi do
         filename: nil,
         'filename!' =>  '',
         extension: nil,
-        home_page: false,
+        home_page?: false,
       )
     end
 

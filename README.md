@@ -23,11 +23,11 @@ Or install it yourself as:
 
 ## Usage
 
-Here are basic 
+I'll say it again: any operation should take exacly one line of code!
+Here are basic: 
 
 ### Utility Methods
 
-I'll say it again: any operation should take exacly one line of code!
 
 ``` ruby
 Furi.host("http://gusiev.com") # => "gusiev.com"
@@ -43,6 +43,7 @@ Furi.merge("http://gusiev.com?source=google", query: {email: "a@b.com"})
 Furi.build(protocol: '//', host: 'gusiev.com', path: '/assets/application.js') 
     # => "//gusiev.com/assets/application.js"
 
+Furi.default("http://gusiev.com", subdomain: 'www') # => "http://www.gusiev.com"
 ```
 
 ### Working with Object
@@ -56,14 +57,21 @@ uri.port!    # => 80
 uri.path     # => nil
 uri.path!    # => '/'
 uri.subdomain ||= 'www'
+uri.protocol = "//" # protocol abstract URL
 ```
 
 ### Processing Query String
 
 ``` ruby
 uri = Furi.parse("/?person[first_name]=Bogdan&person[last_name]=Gusiev")
+
+uri.query_string # => "person[first_name]=Bogdan&person[last_name]=Gusiev"
 uri.query_tokens # => [person[first_name]=Bogdan, person[last_name]=Gusiev]
 uri.query # => {person: {first_name: Bogdan, last_name: 'Gusiev'}}
+
+uri.merge_query(person: {email: 'a@b.com'})
+    # => {person: {email: 'a@b.com', first_name: Bogdan, last_name: 'Gusiev'}}
+
 uri.merge_query(person: {email: 'a@b.com'})
     # => {person: {email: 'a@b.com', first_name: Bogdan, last_name: 'Gusiev'}}
 ```
@@ -99,6 +107,9 @@ uri.merge_query(person: {email: 'a@b.com'})
 Copied from [URI.js](http://medialize.github.io/URI.js/about-uris.html) parsing library 
 
 
+## TODO
+
+* rfc3986
 
 ## Contributing
 
