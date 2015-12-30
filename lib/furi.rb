@@ -146,6 +146,15 @@ module Furi
     end
   end
 
+  # Serializes query parameters into query string.
+  # Optionaly accepts a basic name space.
+  #
+  #   Furi.serialize({a: 1, b: 2}) # => "a=1&b=2"
+  #   Furi.serialize({a: [1,2]}) # => "a[]=1&a[]=2"
+  #   Furi.serialize({a: {b: 1, c:2}}) # => "a[b]=1&a[c]=2"
+  #   Furi.serialize({name: 'Bogdan', email: 'bogdan@example.com'}, "person")
+  #     # => "person[name]=Bogdan&person[email]=bogdan%40example.com"
+  #
   def self.serialize(query, namespace = nil)
     serialize_tokens(query, namespace).join("&")
   end
