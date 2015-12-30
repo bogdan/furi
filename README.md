@@ -104,7 +104,8 @@ uri.merge_query(person: {email: 'a@b.com'})
 ```
 
 
-Copied from [URI.js](http://medialize.github.io/URI.js/about-uris.html) parsing library 
+Originated from [URI.js](http://medialize.github.io/URI.js/about-uris.html) parsing library.
+Giving credit...
 
 
 ## TODO
@@ -112,6 +113,14 @@ Copied from [URI.js](http://medialize.github.io/URI.js/about-uris.html) parsing 
 * rfc3986 validation
 * mailto protocol
 * escaping in path
+* case insensetivity:
+  * domain
+  * protocol
+* case sensitivity:
+  * path
+  * query
+  * anchor
+  * basic auth data ?
 
 ## Contributing
 

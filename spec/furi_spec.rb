@@ -94,7 +94,7 @@ describe Furi do
         fragment: 'header',
         home_page?: false,
       )
-      
+
     end
     it "parses URL without path" do
       expect("http://gusiev.com").to have_parts(
@@ -149,7 +149,7 @@ describe Furi do
     end
 
     it "works with path ending at slash" do
-      
+
       expect("/posts/").to have_parts(
         path: '/posts/',
         directory: '/posts',
@@ -335,7 +335,7 @@ describe Furi do
     end
   end
   describe ".update" do
-    
+
     it "support update for query" do
       expect(Furi.update("/index.html?a=b", query: {c: 'd'})).to eq('/index.html?c=d')
     end
@@ -504,7 +504,7 @@ describe Furi do
       expect(Furi.defaults("gusiev.com?a=1", query: {b: 2})).to eq('gusiev.com?a=1&b=2')
       expect(Furi.defaults("//gusiev.com?a=1", query_string: 'b=2')).to eq('//gusiev.com?a=1')
       expect(Furi.defaults("//gusiev.com", query_string: 'b=2')).to eq('//gusiev.com?b=2')
-      expect(Furi.merge("//gusiev.com?a=1&b=2", query: '?a=3')).to eq('//gusiev.com?a=1&b=2&a=3')
+      expect(Furi.defaults("//gusiev.com?a=1&b=2", query: '?a=3')).to eq('//gusiev.com?a=1&b=2')
     end
   end
 
@@ -515,7 +515,8 @@ describe Furi do
       expect(Furi.parse('http://gusiev.com') == Furi.parse('http://gusiev.com')).to be_truthy
       expect(Furi.parse('http://gusiev.com.ua') == Furi.parse('http://gusiev.com')).to be_falsey
       expect(Furi.parse('http://gusiev.com?a=1&a=1') == Furi.parse('http://gusiev.com?a=1')).to be_falsey
-      #expect(Furi.parse('http://gUSiev.cOm?A=1') == Furi.parse('http://gusiev.com?a=1')).to be_falsey
+      pending
+      expect(Furi.parse('http://gUSiev.cOm?A=1') == Furi.parse('http://gusiev.com?a=1')).to be_truthy
     end
   end
 
@@ -525,10 +526,6 @@ describe Furi do
       uri = Furi.parse('http://gusiev.com')
       expect(uri.clone == uri).to be_truthy
       expect(uri.clone.merge_query([[:a, 1]]) == uri).to be_falsey
-      expect(Furi.parse('http://gusiev.com') == Furi.parse('https://gusiev.com')).to be_falsey
-      expect(Furi.parse('http://gusiev.com') == Furi.parse('http://gusiev.com')).to be_truthy
-      expect(Furi.parse('http://gusiev.com.ua') == Furi.parse('http://gusiev.com')).to be_falsey
-      expect(Furi.parse('http://gusiev.com?a=1&a=1') == Furi.parse('http://gusiev.com?a=1')).to be_falsey
     end
   end
 
