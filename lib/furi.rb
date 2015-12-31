@@ -56,8 +56,9 @@ module Furi
   ROOT = '/'
 
   # Parses a given string and return an URL object
-  def self.parse(argument)
-    Uri.new(argument)
+  # Optionally accepts parts to update the parsed URL object
+  def self.parse(argument, parts = nil)
+    Uri.new(argument).update(parts)
   end
 
   # Builds an URL from given parts

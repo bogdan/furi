@@ -305,6 +305,14 @@ describe Furi do
       )
     end
 
+    it "downcases only protocol and host" do
+      expect("HTTP://GUSIEV.cOM/About").to have_parts(
+        protocol: 'http',
+        host: 'gusiev.com',
+        path: "/About",
+      )
+    end
+
     describe "ipv6 host" do
       it "parses host and port" do
         expect("http://[2406:da00:ff00::6b14:8d43]:8080/").to have_parts(
@@ -452,6 +460,14 @@ describe Furi do
       expect(Furi.update("http://gusiev.com:433/index.html", location: nil)).to eq('/index.html')
     end
 
+    it "updates query" do
+      expect(Furi.update("/", query: {a: 1})).to eq('/?a=1')
+      expect(Furi.update("/", query: {a: [1,2]})).to eq('/?a%5B%5D=1&a%5B%5D=2')
+      expect(Furi.update("/", query: {a: 1, b: 2})).to eq('/?a=1&b=2')
+      expect(Furi.update("/?a=1", query: {a: 2})).to eq('/?a=2')
+      expect(Furi.update("/?a=1&a=1", query: true)).to eq('/?a=1')
+    end
+
   end
 
   describe ".build" do
@@ -515,8 +531,25 @@ describe Furi do
       expect(Furi.parse('http://gusiev.com') == Furi.parse('http://gusiev.com')).to be_truthy
       expect(Furi.parse('http://gusiev.com.ua') == Furi.parse('http://gusiev.com')).to be_falsey
       expect(Furi.parse('http://gusiev.com?a=1&a=1') == Furi.parse('http://gusiev.com?a=1')).to be_falsey
-      pending
-      expect(Furi.parse('http://gUSiev.cOm?A=1') == Furi.parse('http://gusiev.com?a=1')).to be_truthy
+    end
+
+    it "works with query parameters" do
+      expect(Furi.parse('/?b=1&a=1') == Furi.parse('/?b=1&a=1')).to be_truthy
+      expect(Furi.parse('/?a=1&a=1') == Furi.parse('/?a=1')).to be_falsey
+      expect(Furi.parse('/') == Furi.parse('/?a=1')).to be_falsey
+      expect(Furi.parse('/') == Furi.parse('http://gusiev.com?a=1')).to be_falsey
+
+    end
+
+    it "ignores case only on protocol and host" do
+      expect(Furi.parse('hTTp://gUSiev.cOm') == Furi.parse('http://gusiev.com')).to be_truthy
+      expect(Furi.parse('/hello') == Furi.parse('/Hello')).to be_falsey
+      expect(Furi.parse('/hello?a=1') == Furi.parse('/hello?A=1')).to be_falsey
+      expect(Furi.parse('hTTp://gusiev.cOm') == Furi.parse('http://gusiev.com')).to be_truthy
+    end
+
+    it "should ignore case for protocol" do
+
     end
   end
 

@@ -26,8 +26,10 @@ module Furi
     end
 
     def update(parts)
-      parts.each do |part, value|
-        self[part] = value
+      if parts
+        parts.each do |part, value|
+          self[part] = value
+        end
       end
       self
     end
@@ -91,7 +93,7 @@ module Furi
               when "", nil
                 nil
               else
-                host.to_s
+                host.to_s.downcase
               end
     end
 
@@ -218,11 +220,13 @@ module Furi
 
 
     def query=(value)
-      @query = nil
-      @query_tokens = []
       case value
+      when true
+        # Assuming that current query needs to be parsed to Hash
+        query
       when String, Array
         self.query_tokens = value
+        @query = nil
       when Hash
         self.query_tokens = value
         @query = value
@@ -283,7 +287,7 @@ module Furi
     end
 
     def protocol=(protocol)
-      @protocol = protocol ? protocol.gsub(%r{:?/?/?\Z}, "") : nil
+      @protocol = protocol ? protocol.gsub(%r{:?/?/?\Z}, "").downcase : nil
     end
 
 
