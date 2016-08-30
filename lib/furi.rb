@@ -35,6 +35,7 @@ module Furi
     "tftp" => {port: 69},
     "sftp" => {port: 22},
     "ssh" => {port: 22, ssl: true},
+    "svn" => {port: 3690},
     "svn+ssh" => {port: 22, ssl: true},
     "telnet" => {port: 23},
     "nntp" => {port: 119},
@@ -42,6 +43,9 @@ module Furi
     "wais" => {port: 210},
     "ldap" => {port: 389},
     "prospero" => {port: 1525},
+    "file" => {port: nil},
+    "postgres" => {port: 5432},
+    "mysql" => {port: 3306},
   }
 
 
@@ -158,6 +162,12 @@ module Furi
   #
   def self.serialize(query, namespace = nil)
     serialize_tokens(query, namespace).join("&")
+  end
+
+  def self.join(*uris)
+    uris.map do |uri|
+      Furi.parse(uri)
+    end.reduce(:join)
   end
 
   class FormattingError < StandardError

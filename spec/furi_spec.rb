@@ -613,7 +613,7 @@ describe Furi do
     end
   end
 
-  describe "parse_query" do
+  describe ".parse_query" do
     it "should work" do
     Furi.parse_query("foo").
       should eq "foo" => nil
@@ -698,4 +698,10 @@ describe Furi do
     expect(Furi.parse('http://google.com').inspect).to eq("#<Furi::Uri \"http://google.com\">")
   end
 
+
+  describe ".join" do
+    it "works" do
+      expect(Furi.join("http://gusiev.com/slides", "../photos")).to eq("http://gusiev.com/photos")
+    end
+  end
 end

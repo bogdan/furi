@@ -22,6 +22,10 @@ module Furi
         parse_uri_string(argument)
       when Hash
         update(argument)
+      when ::URI::Generic
+        parse_uri_string(argument.to_s)
+      else
+        raise ArgumentError, "wrong Uri argument"
       end
     end
 
@@ -365,11 +369,11 @@ module Furi
     end
 
     def default_port
-      protocol && Furi::PROTOCOLS[protocol] ? Furi::PROTOCOLS[protocol][:port] : nil
+      Furi::PROTOCOLS.fetch(protocol, {})[:port]
     end
 
     def ssl?
-      !!(protocol && Furi::PROTOCOLS[protocol][:ssl])
+      !!(Furi::PROTOCOLS.fetch(protocol, {})[:ssl])
     end
 
     def ssl
@@ -501,6 +505,10 @@ module Furi
         self.query_tokens = query_string
       end
       string
+    end
+
+    def join(uri)
+      Uri.new(::URI.join(to_s, uri.to_s))
     end
 
     def parse_protocol(string)
