@@ -36,9 +36,9 @@ Furi.port!("http://gusiev.com") # => 80
 
 Furi.update("http://gusiev.com", protocol: '') # => "//gusiev.com"
 Furi.update("http://gusiev.com?source=google", query: {email: "a@b.com"}) 
-    # => "http://gusiev.com?email=a@b.com"
-Furi.merge("http://gusiev.com?source=google", query: {email: "a@b.com"}) 
     # => "http://gusiev.com?source=google&email=a@b.com"
+Furi.replace("http://gusiev.com?source=google", query: {email: "a@b.com"}) 
+    # => "http://gusiev.com?email=a@b.com"
 
 Furi.build(protocol: '//', host: 'gusiev.com', path: '/assets/application.js') 
     # => "//gusiev.com/assets/application.js"

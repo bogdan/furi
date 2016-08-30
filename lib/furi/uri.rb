@@ -21,7 +21,7 @@ module Furi
       when String
         parse_uri_string(argument)
       when Hash
-        update(argument)
+        replace(argument)
       when ::URI::Generic
         parse_uri_string(argument.to_s)
       else
@@ -29,7 +29,7 @@ module Furi
       end
     end
 
-    def update(parts)
+    def replace(parts)
       if parts
         parts.each do |part, value|
           self[part] = value
@@ -38,10 +38,11 @@ module Furi
       self
     end
 
-    def merge(parts)
+    def update(parts)
+      return self unless parts
       parts.each do |part, value|
         case part.to_sym
-        when :query, :query_tokens
+        when :query, :query_tokens, :query_string
           merge_query(value)
         else
           self[part] = value

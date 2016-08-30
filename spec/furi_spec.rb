@@ -342,130 +342,130 @@ describe Furi do
       end
     end
   end
-  describe ".update" do
+  describe ".replace" do
 
-    it "support update for query" do
-      expect(Furi.update("/index.html?a=b", query: {c: 'd'})).to eq('/index.html?c=d')
-    end
-
-    it "updates hostname" do
-      expect(Furi.update("www.gusiev.com/index.html", hostname: 'gusiev.com')).to eq('gusiev.com/index.html')
-      expect(Furi.update("/index.html", hostname: 'gusiev.com')).to eq('gusiev.com/index.html')
-      expect(Furi.update("http://www.gusiev.com/index.html", hostname: 'gusiev.com')).to eq('http://gusiev.com/index.html')
-      expect(Furi.update("/index.html", hostname: 'gusiev.com')).to eq('gusiev.com/index.html')
-      expect(Furi.update("gusiev.com/index.html?a=b", hostname: nil)).to eq('/index.html?a=b')
-      expect(Furi.update("gusiev.com?a=b", hostname: nil)).to eq('/?a=b')
+    it "support replace for query" do
+      expect(Furi.replace("/index.html?a=b", query: {c: 'd'})).to eq('/index.html?c=d')
     end
 
-    it "updates port" do
-      expect(Furi.update("gusiev.com", port: 33)).to eq('gusiev.com:33')
-      expect(Furi.update("gusiev.com/index.html", port: 33)).to eq('gusiev.com:33/index.html')
-      expect(Furi.update("gusiev.com:33/index.html", port: 80)).to eq('gusiev.com:80/index.html')
-      expect(Furi.update("http://gusiev.com:33/index.html", port: 80)).to eq('http://gusiev.com/index.html')
-      expect(Furi.update("http://gusiev.com:33/index.html", port: nil)).to eq('http://gusiev.com/index.html')
-      expect(Furi.update("http://gusiev.com:33/index.html", port: 0)).to eq('http://gusiev.com:0/index.html')
-      expect(Furi.update("http://gusiev.com:33/index.html", port: '')).to eq('http://gusiev.com/index.html')
+    it "replace hostname" do
+      expect(Furi.replace("www.gusiev.com/index.html", hostname: 'gusiev.com')).to eq('gusiev.com/index.html')
+      expect(Furi.replace("/index.html", hostname: 'gusiev.com')).to eq('gusiev.com/index.html')
+      expect(Furi.replace("http://www.gusiev.com/index.html", hostname: 'gusiev.com')).to eq('http://gusiev.com/index.html')
+      expect(Furi.replace("/index.html", hostname: 'gusiev.com')).to eq('gusiev.com/index.html')
+      expect(Furi.replace("gusiev.com/index.html?a=b", hostname: nil)).to eq('/index.html?a=b')
+      expect(Furi.replace("gusiev.com?a=b", hostname: nil)).to eq('/?a=b')
     end
-    it "updates directory" do
-      expect(Furi.update("gusiev.com", directory: 'articles')).to eq('gusiev.com/articles')
-      expect(Furi.update("gusiev.com/", directory: 'articles')).to eq('gusiev.com/articles')
-      expect(Furi.update("gusiev.com/index#header", directory: '/posts')).to eq('gusiev.com/posts/index#header')
-      expect(Furi.update("gusiev.com/articles/#header", directory: nil)).to eq('gusiev.com/#header')
-      expect(Furi.update("gusiev.com/articles/index?a=b", directory: 'posts')).to eq('gusiev.com/posts/index?a=b')
-      expect(Furi.update("/articles/index?a=b", directory: '/posts')).to eq('/posts/index?a=b')
-      expect(Furi.update("/articles/index.html?a=b", directory: '/posts/')).to eq('/posts/index.html?a=b')
+
+    it "replace port" do
+      expect(Furi.replace("gusiev.com", port: 33)).to eq('gusiev.com:33')
+      expect(Furi.replace("gusiev.com/index.html", port: 33)).to eq('gusiev.com:33/index.html')
+      expect(Furi.replace("gusiev.com:33/index.html", port: 80)).to eq('gusiev.com:80/index.html')
+      expect(Furi.replace("http://gusiev.com:33/index.html", port: 80)).to eq('http://gusiev.com/index.html')
+      expect(Furi.replace("http://gusiev.com:33/index.html", port: nil)).to eq('http://gusiev.com/index.html')
+      expect(Furi.replace("http://gusiev.com:33/index.html", port: 0)).to eq('http://gusiev.com:0/index.html')
+      expect(Furi.replace("http://gusiev.com:33/index.html", port: '')).to eq('http://gusiev.com/index.html')
     end
-    it "updates filename" do
-      expect(Furi.update("gusiev.com", filename: 'article')).to eq('gusiev.com/article')
-      expect(Furi.update("gusiev.com/", filename: 'article')).to eq('gusiev.com/article')
-      expect(Furi.update("gusiev.com/article1#header", filename: '/article2')).to eq('gusiev.com/article2#header')
-      expect(Furi.update("gusiev.com/article#header", filename: nil)).to eq('gusiev.com/#header')
-      expect(Furi.update("gusiev.com/articles/article1?a=b", filename: 'article2')).to eq('gusiev.com/articles/article2?a=b')
-      expect(Furi.update("/articles/article1?a=b", filename: '/article2')).to eq('/articles/article2?a=b')
-      expect(Furi.update("/articles/article1.xml?a=b", filename: 'article2.html')).to eq('/articles/article2.html?a=b')
+    it "replace directory" do
+      expect(Furi.replace("gusiev.com", directory: 'articles')).to eq('gusiev.com/articles')
+      expect(Furi.replace("gusiev.com/", directory: 'articles')).to eq('gusiev.com/articles')
+      expect(Furi.replace("gusiev.com/index#header", directory: '/posts')).to eq('gusiev.com/posts/index#header')
+      expect(Furi.replace("gusiev.com/articles/#header", directory: nil)).to eq('gusiev.com/#header')
+      expect(Furi.replace("gusiev.com/articles/index?a=b", directory: 'posts')).to eq('gusiev.com/posts/index?a=b')
+      expect(Furi.replace("/articles/index?a=b", directory: '/posts')).to eq('/posts/index?a=b')
+      expect(Furi.replace("/articles/index.html?a=b", directory: '/posts/')).to eq('/posts/index.html?a=b')
     end
-    it "updates extension" do
+    it "replace filename" do
+      expect(Furi.replace("gusiev.com", filename: 'article')).to eq('gusiev.com/article')
+      expect(Furi.replace("gusiev.com/", filename: 'article')).to eq('gusiev.com/article')
+      expect(Furi.replace("gusiev.com/article1#header", filename: '/article2')).to eq('gusiev.com/article2#header')
+      expect(Furi.replace("gusiev.com/article#header", filename: nil)).to eq('gusiev.com/#header')
+      expect(Furi.replace("gusiev.com/articles/article1?a=b", filename: 'article2')).to eq('gusiev.com/articles/article2?a=b')
+      expect(Furi.replace("/articles/article1?a=b", filename: '/article2')).to eq('/articles/article2?a=b')
+      expect(Furi.replace("/articles/article1.xml?a=b", filename: 'article2.html')).to eq('/articles/article2.html?a=b')
+    end
+    it "replace extension" do
       expect(->{
-       Furi.update("gusiev.com/", extension: 'xml')
+       Furi.replace("gusiev.com/", extension: 'xml')
       }).to raise_error(Furi::FormattingError)
-      expect(Furi.update("gusiev.com/article#header", extension: 'html')).to eq('gusiev.com/article.html#header')
-      expect(Furi.update("gusiev.com/article.html?header", extension: nil)).to eq('gusiev.com/article?header')
-      expect(Furi.update("gusiev.com/article.xml?a=b", extension: 'html')).to eq('gusiev.com/article.html?a=b')
+      expect(Furi.replace("gusiev.com/article#header", extension: 'html')).to eq('gusiev.com/article.html#header')
+      expect(Furi.replace("gusiev.com/article.html?header", extension: nil)).to eq('gusiev.com/article?header')
+      expect(Furi.replace("gusiev.com/article.xml?a=b", extension: 'html')).to eq('gusiev.com/article.html?a=b')
     end
-    it "updates resource" do
-      expect(Furi.update("gusiev.com", resource: '/article?a=1#hello')).to eq('gusiev.com/article?a=1#hello')
-      expect(Furi.update("gusiev.com/article1#header", resource: '/article2')).to eq('gusiev.com/article2')
-      expect(Furi.update("gusiev.com/article#header", resource: nil)).to eq('gusiev.com')
-      expect(Furi.update("gusiev.com/article1?a=b", resource: 'article2')).to eq('gusiev.com/article2')
+    it "replace resource" do
+      expect(Furi.replace("gusiev.com", resource: '/article?a=1#hello')).to eq('gusiev.com/article?a=1#hello')
+      expect(Furi.replace("gusiev.com/article1#header", resource: '/article2')).to eq('gusiev.com/article2')
+      expect(Furi.replace("gusiev.com/article#header", resource: nil)).to eq('gusiev.com')
+      expect(Furi.replace("gusiev.com/article1?a=b", resource: 'article2')).to eq('gusiev.com/article2')
     end
-    it "updates path" do
-      expect(Furi.update("gusiev.com", path: '/article')).to eq('gusiev.com/article')
-      expect(Furi.update("gusiev.com/article1#header", path: '/article2')).to eq('gusiev.com/article2#header')
-      expect(Furi.update("gusiev.com/article#header", path: nil)).to eq('gusiev.com#header')
-      expect(Furi.update("gusiev.com/article1?a=b", path: 'article2')).to eq('gusiev.com/article2?a=b')
-    end
-
-    it "updates ssl" do
-      expect(Furi.update("http://gusiev.com", ssl: true)).to eq('https://gusiev.com')
-      expect(Furi.update("https://gusiev.com", ssl: true)).to eq('https://gusiev.com')
-      expect(Furi.update("https://gusiev.com", ssl: false)).to eq('http://gusiev.com')
-      expect(Furi.update("http://gusiev.com", ssl: false)).to eq('http://gusiev.com')
+    it "replace path" do
+      expect(Furi.replace("gusiev.com", path: '/article')).to eq('gusiev.com/article')
+      expect(Furi.replace("gusiev.com/article1#header", path: '/article2')).to eq('gusiev.com/article2#header')
+      expect(Furi.replace("gusiev.com/article#header", path: nil)).to eq('gusiev.com#header')
+      expect(Furi.replace("gusiev.com/article1?a=b", path: 'article2')).to eq('gusiev.com/article2?a=b')
     end
 
-    it "updates protocol" do
-      expect(Furi.update("http://gusiev.com", protocol: '')).to eq('//gusiev.com')
-      expect(Furi.update("http://gusiev.com", protocol: nil)).to eq('gusiev.com')
-      expect(Furi.update("http://gusiev.com", protocol: 'https')).to eq('https://gusiev.com')
-      expect(Furi.update("gusiev.com", protocol: 'http')).to eq('http://gusiev.com')
-      expect(Furi.update("gusiev.com", protocol: 'http:')).to eq('http://gusiev.com')
-      expect(Furi.update("gusiev.com", protocol: 'http:/')).to eq('http://gusiev.com')
-      expect(Furi.update("gusiev.com", protocol: 'http://')).to eq('http://gusiev.com')
+    it "replace ssl" do
+      expect(Furi.replace("http://gusiev.com", ssl: true)).to eq('https://gusiev.com')
+      expect(Furi.replace("https://gusiev.com", ssl: true)).to eq('https://gusiev.com')
+      expect(Furi.replace("https://gusiev.com", ssl: false)).to eq('http://gusiev.com')
+      expect(Furi.replace("http://gusiev.com", ssl: false)).to eq('http://gusiev.com')
     end
 
-    it "updates userinfo" do
-      expect(Furi.update("http://gusiev.com", userinfo: 'hello:world')).to eq('http://hello:world@gusiev.com')
-      expect(Furi.update("http://aa:bb@gusiev.com", userinfo: 'hello:world')).to eq('http://hello:world@gusiev.com')
-      expect(Furi.update("http://aa:bb@gusiev.com", userinfo: nil)).to eq('http://gusiev.com')
-      expect(Furi.update("http://aa@gusiev.com", userinfo: 'hello:world')).to eq('http://hello:world@gusiev.com')
+    it "replace protocol" do
+      expect(Furi.replace("http://gusiev.com", protocol: '')).to eq('//gusiev.com')
+      expect(Furi.replace("http://gusiev.com", protocol: nil)).to eq('gusiev.com')
+      expect(Furi.replace("http://gusiev.com", protocol: 'https')).to eq('https://gusiev.com')
+      expect(Furi.replace("gusiev.com", protocol: 'http')).to eq('http://gusiev.com')
+      expect(Furi.replace("gusiev.com", protocol: 'http:')).to eq('http://gusiev.com')
+      expect(Furi.replace("gusiev.com", protocol: 'http:/')).to eq('http://gusiev.com')
+      expect(Furi.replace("gusiev.com", protocol: 'http://')).to eq('http://gusiev.com')
     end
 
-    it "updates authority" do
-      expect(Furi.update("http://user:pass@gusiev.com:8080/index.html", authority: 'gusiev.com')).to eq('http://gusiev.com/index.html')
+    it "replace userinfo" do
+      expect(Furi.replace("http://gusiev.com", userinfo: 'hello:world')).to eq('http://hello:world@gusiev.com')
+      expect(Furi.replace("http://aa:bb@gusiev.com", userinfo: 'hello:world')).to eq('http://hello:world@gusiev.com')
+      expect(Furi.replace("http://aa:bb@gusiev.com", userinfo: nil)).to eq('http://gusiev.com')
+      expect(Furi.replace("http://aa@gusiev.com", userinfo: 'hello:world')).to eq('http://hello:world@gusiev.com')
     end
 
-    it "updates request" do
-      expect(Furi.update("http://gusiev.com:8080/index.html?c=d", request: '/blog.html?a=b')).to eq('http://gusiev.com:8080/blog.html?a=b')
+    it "replace authority" do
+      expect(Furi.replace("http://user:pass@gusiev.com:8080/index.html", authority: 'gusiev.com')).to eq('http://gusiev.com/index.html')
     end
 
-    it "updates domainzone" do
-      expect(Furi.update("http://gusiev.com:8080", domainzone: 'com.ua')).to eq('http://gusiev.com.ua:8080')
-      expect(Furi.update("http://gusiev.com.ua:8080", domainzone: 'com')).to eq('http://gusiev.com:8080')
-      expect(Furi.update("http://gusiev.com.ua:8080", domainzone: nil)).to eq('http://gusiev:8080')
+    it "replace request" do
+      expect(Furi.replace("http://gusiev.com:8080/index.html?c=d", request: '/blog.html?a=b')).to eq('http://gusiev.com:8080/blog.html?a=b')
     end
 
-    it "updates domainname" do
-      expect(Furi.update("http://gusiev.com", domainname: 'google')).to eq('http://google.com')
-      expect(Furi.update("http://gusiev.com", domainname: nil)).to eq('http://com')
-    end
-    it "updates subdomain" do
-      expect(Furi.update("http://gusiev.com", subdomain: 'blog')).to eq('http://blog.gusiev.com')
-      expect(Furi.update("http://blog.gusiev.com", subdomain: nil)).to eq('http://gusiev.com')
+    it "replace domainzone" do
+      expect(Furi.replace("http://gusiev.com:8080", domainzone: 'com.ua')).to eq('http://gusiev.com.ua:8080')
+      expect(Furi.replace("http://gusiev.com.ua:8080", domainzone: 'com')).to eq('http://gusiev.com:8080')
+      expect(Furi.replace("http://gusiev.com.ua:8080", domainzone: nil)).to eq('http://gusiev:8080')
     end
 
-    it "updates location" do
-      expect(Furi.update("/index.html", location: 'http://gusiev.com')).to eq('http://gusiev.com/index.html')
-      expect(Furi.update("/index.html", location: 'http://gusiev.com/')).to eq('http://gusiev.com/index.html')
-      expect(Furi.update("gusiev.com:433/index.html", location: 'gusiev.com:80')).to eq('gusiev.com:80/index.html')
-      expect(Furi.update("gusiev.com:433/index.html", location: nil)).to eq('/index.html')
-      expect(Furi.update("http://gusiev.com:433/index.html", location: nil)).to eq('/index.html')
+    it "replace domainname" do
+      expect(Furi.replace("http://gusiev.com", domainname: 'google')).to eq('http://google.com')
+      expect(Furi.replace("http://gusiev.com", domainname: nil)).to eq('http://com')
+    end
+    it "replace subdomain" do
+      expect(Furi.replace("http://gusiev.com", subdomain: 'blog')).to eq('http://blog.gusiev.com')
+      expect(Furi.replace("http://blog.gusiev.com", subdomain: nil)).to eq('http://gusiev.com')
     end
 
-    it "updates query" do
-      expect(Furi.update("/", query: {a: 1})).to eq('/?a=1')
-      expect(Furi.update("/", query: {a: [1,2]})).to eq('/?a%5B%5D=1&a%5B%5D=2')
-      expect(Furi.update("/", query: {a: 1, b: 2})).to eq('/?a=1&b=2')
-      expect(Furi.update("/?a=1", query: {a: 2})).to eq('/?a=2')
-      expect(Furi.update("/?a=1&a=1", query: true)).to eq('/?a=1')
+    it "replace location" do
+      expect(Furi.replace("/index.html", location: 'http://gusiev.com')).to eq('http://gusiev.com/index.html')
+      expect(Furi.replace("/index.html", location: 'http://gusiev.com/')).to eq('http://gusiev.com/index.html')
+      expect(Furi.replace("gusiev.com:433/index.html", location: 'gusiev.com:80')).to eq('gusiev.com:80/index.html')
+      expect(Furi.replace("gusiev.com:433/index.html", location: nil)).to eq('/index.html')
+      expect(Furi.replace("http://gusiev.com:433/index.html", location: nil)).to eq('/index.html')
+    end
+
+    it "replace query" do
+      expect(Furi.replace("/", query: {a: 1})).to eq('/?a=1')
+      expect(Furi.replace("/", query: {a: [1,2]})).to eq('/?a%5B%5D=1&a%5B%5D=2')
+      expect(Furi.replace("/", query: {a: 1, b: 2})).to eq('/?a=1&b=2')
+      expect(Furi.replace("/?a=1", query: {a: 2})).to eq('/?a=2')
+      expect(Furi.replace("/?a=1&a=1", query: true)).to eq('/?a=1')
     end
 
   end
@@ -493,13 +493,16 @@ describe Furi do
     end
   end
 
-  describe ".merge" do
-    it "should work" do
-      expect(Furi.merge("//gusiev.com", query: {a: 1})).to eq('//gusiev.com?a=1')
-      expect(Furi.merge("//gusiev.com?a=1", query: {b: 2})).to eq('//gusiev.com?a=1&b=2')
-      expect(Furi.merge("//gusiev.com?a=1", query: {a: 2})).to eq('//gusiev.com?a=2')
-      expect(Furi.merge("//gusiev.com?a=1", query: [['a', 2], ['b', 3]])).to eq('//gusiev.com?a=1&a=2&b=3')
-      expect(Furi.merge("//gusiev.com?a=1&b=2", query: '?a=3')).to eq('//gusiev.com?a=1&b=2&a=3')
+  describe ".update" do
+    it "updates query" do
+      expect(Furi.update("//gusiev.com", query: {a: 1})).to eq('//gusiev.com?a=1')
+      expect(Furi.update("//gusiev.com?a=1", query: {b: 2})).to eq('//gusiev.com?a=1&b=2')
+      expect(Furi.update("//gusiev.com?a=1", query: {a: 2})).to eq('//gusiev.com?a=2')
+      expect(Furi.update("//gusiev.com?a=1", query: [['a', 2], ['b', 3]])).to eq('//gusiev.com?a=1&a=2&b=3')
+      expect(Furi.update("//gusiev.com?a=1&b=2", query: '?a=3')).to eq('//gusiev.com?a=1&b=2&a=3')
+    end
+    it "updates query_string" do
+      expect(Furi.update("//gusiev.com?a=1&b=2", query_string: '?a=3')).to eq('//gusiev.com?a=1&b=2&a=3')
     end
   end
 

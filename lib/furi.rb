@@ -88,6 +88,9 @@ module Furi
   def self.update(string, parts)
     parse(string).update(parts).to_s
   end
+  class << self
+    alias :merge :update
+  end
 
   # Puts the default values for given URL that are not defined
   #
@@ -99,14 +102,15 @@ module Furi
 
   # Replaces a given URL string with given parts.
   # Same as update but works different for URL query parameter:
-  # merges newly specified parameters instead of replacing existing ones
+  # replaces newly specified parameters instead of merging to existing ones
   #
-  #   Furi.merge("/hello.html?a=1", host: 'gusiev.com', query: {b: 2})
+  #   Furi.update("/hello.html?a=1", host: 'gusiev.com', query: {b: 2})
   #     # => "gusiev.com/hello.html?a=1&b=2"
   #
-  def self.merge(string, parts)
-    parse(string).merge(parts).to_s
+  def self.replace(string, parts)
+    parse(string).replace(parts).to_s
   end
+
 
 
   # Parses a query into nested paramters hash using a rack convension with square brackets.
