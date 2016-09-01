@@ -121,7 +121,6 @@ Giving credit...
   * query
   * anchor
   * basic auth data ?
-* URI.join method
 
 ## Contributing
 

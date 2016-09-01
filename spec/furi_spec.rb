@@ -491,6 +491,12 @@ describe Furi do
         Furi.build(host: 'localhost', password: 'pass')
       }).to raise_error(Furi::FormattingError)
     end
+
+    it "builds protocol" do
+      expect(Furi.build(protocol: 'http', host: 'hello.com', port: 80)).to eq('http://hello.com')
+      expect(Furi.build(protocol: 'mailto', username: "bogdan", host: 'gusiev.com')).to eq('mailto:bogdan@gusiev.com')
+
+    end
   end
 
   describe ".update" do
@@ -551,8 +557,12 @@ describe Furi do
       expect(Furi.parse('hTTp://gusiev.cOm') == Furi.parse('http://gusiev.com')).to be_truthy
     end
 
-    it "should ignore case for protocol" do
+  end
 
+  describe "#abstract_protocol" do
+    it "works" do
+      expect(Furi.parse('http://gUSiev.cOm')).to_not be_abstract_protocol
+      expect(Furi.parse('//gUSiev.cOm')).to be_abstract_protocol
     end
   end
 
