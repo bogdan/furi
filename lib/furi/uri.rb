@@ -474,6 +474,9 @@ module Furi
     end
 
     def parse_uri_string(string)
+      if string.empty?
+        raise Furi::FormattingError, "can not be an empty string"
+      end
       string = parse_anchor_and_query(string)
 
       string = parse_protocol(string)

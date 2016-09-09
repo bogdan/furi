@@ -64,7 +64,13 @@ describe Furi do
 
 
 
-  describe "#parse" do
+  describe ".parse" do
+
+    it "raises on empty string" do
+      expect {
+        Furi.parse("")
+      }.to raise_error(Furi::FormattingError)
+    end
 
     it "parses URL with everything" do
       expect("http://user:pass@www.gusiev.com:8080/articles/index.html?a=1&b=2#header").to have_parts(
