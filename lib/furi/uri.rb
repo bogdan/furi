@@ -188,7 +188,9 @@ module Furi
         unless host
           raise Furi::FormattingError, "can not build URI with protocol but without host"
         end
-        [protocol.empty? ? "" : "#{protocol}:", authority].join("//")
+        [
+          protocol.empty? ? "" : "#{protocol}:", authority
+        ].join(protocol == "mailto" ? "" : "//")
       else
         authority
       end

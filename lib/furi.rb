@@ -46,6 +46,7 @@ module Furi
     "file" => {port: nil},
     "postgres" => {port: 5432},
     "mysql" => {port: 3306},
+    "mailto" => {port: nil}
   }
 
 
