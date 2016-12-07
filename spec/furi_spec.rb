@@ -349,6 +349,19 @@ describe Furi do
         )
       end
     end
+
+    describe "mailto" do
+      it "without email" do
+        expect("mailto:?subject=Talkable%20is%20Hiring&body=https%3A%2F%2Fwww.talkable.com%2Fjobs").to have_parts(
+          protocol: 'mailto',
+          email: nil,
+          query: {
+            "subject" => "Talkable is Hiring",
+            "body" => "https://www.talkable.com/jobs"
+          }
+        )
+      end
+    end
   end
   describe ".replace" do
 

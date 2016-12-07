@@ -544,7 +544,7 @@ module Furi
     end
 
     def parse_protocol(string)
-      if string.include?("://")
+      if string.include?("://") || string.start_with?("mailto:")
         protocol, string = string.split(":", 2)
         self.protocol = protocol
       end
