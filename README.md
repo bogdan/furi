@@ -29,21 +29,34 @@ Here are basic:
 ### Utility Methods
 
 
+Parsing the URI fragments:
+
 ``` ruby
 Furi.host("http://gusiev.com") # => "gusiev.com"
 Furi.port("http://gusiev.com") # => nil
 Furi.port!("http://gusiev.com") # => 80
+```
 
+Updating the URI parts:
+
+```
 Furi.update("http://gusiev.com", protocol: '') # => "//gusiev.com"
 Furi.update("http://gusiev.com?source=google", query: {email: "a@b.com"}) 
     # => "http://gusiev.com?source=google&email=a@b.com"
 Furi.replace("http://gusiev.com?source=google", query: {email: "a@b.com"}) 
     # => "http://gusiev.com?email=a@b.com"
 
+Furi.defaults("http://gusiev.com", subdomain: 'www') # => "http://www.gusiev.com"
+Furi.defaults("http://blog.gusiev.com", subdomain: 'www') # => "http://blog.gusiev.com"
+
+```
+
+Building an URI from initial parts:
+
+``` ruby
+
 Furi.build(protocol: '//', host: 'gusiev.com', path: '/assets/application.js') 
     # => "//gusiev.com/assets/application.js"
-
-Furi.defaults("http://gusiev.com", subdomain: 'www') # => "http://www.gusiev.com"
 ```
 
 ### Working with Object
@@ -110,9 +123,7 @@ Giving credit...
 
 ## TODO
 
-* rfc3986 validation
-* mailto protocol
-* escaping in path
+* Improve URI.join algorithm to match the one used in Addressible library
 
 ## Contributing
 
