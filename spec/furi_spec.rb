@@ -561,6 +561,9 @@ describe Furi do
       expect(Furi.parse('/hello') == Furi.parse('/Hello')).to be_falsey
       expect(Furi.parse('/hello?a=1') == Furi.parse('/hello?A=1')).to be_falsey
       expect(Furi.parse('hTTp://gusiev.cOm') == Furi.parse('http://gusiev.com')).to be_truthy
+      expect(Furi.parse('/#h1') == Furi.parse('/#H1')).to be_falsey
+      expect(Furi.parse('hello@gusiev.com') == Furi.parse('Hello@gusiev.com')).to be_falsey
+      expect(Furi.parse('hello:psswd@gusiev.com') == Furi.parse('hello:Psswd@gusiev.com')).to be_falsey
     end
 
   end
