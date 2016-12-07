@@ -111,8 +111,10 @@ describe Furi do
         path: nil,
         path!: '/',
         port: nil,
-        request: '/',
-        resource: '/',
+        request: nil,
+        request!: '/',
+        resource: nil,
+        resource!: '/',
         location: 'http://gusiev.com',
         home_page?: true,
       )
@@ -501,6 +503,8 @@ describe Furi do
     it "builds protocol" do
       expect(Furi.build(protocol: 'http', host: 'hello.com', port: 80)).to eq('http://hello.com')
       expect(Furi.build(protocol: 'mailto', username: "bogdan", host: 'gusiev.com')).to eq('mailto:bogdan@gusiev.com')
+      expect(Furi.build(email: "bogdan@gusiev.com")).to eq('mailto:bogdan@gusiev.com')
+      expect(Furi.build(protocol: 'mailto', query: {subject: 'Hello', body: "Welcome"})).to eq('mailto:?subject=Hello&body=Welcome')
 
     end
   end

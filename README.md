@@ -113,14 +113,6 @@ Giving credit...
 * rfc3986 validation
 * mailto protocol
 * escaping in path
-* case insensetivity:
-  * domain
-  * protocol
-* case sensitivity:
-  * path
-  * query
-  * anchor
-  * basic auth data ?
 
 ## Contributing
 

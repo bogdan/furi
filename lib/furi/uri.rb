@@ -173,7 +173,7 @@ module Furi
     def to_s
       result = []
       result << location
-      result << (host ? path : path!)
+      result << (host || mailto? ? path : path!)
       if query_tokens.any?
         result << "?" << query_string
       end
@@ -185,12 +185,12 @@ module Furi
 
     def location
       if protocol
-        unless host
+        if !host && !mailto?
           raise Furi::FormattingError, "can not build URI with protocol but without host"
         end
         [
           protocol.empty? ? "" : "#{protocol}:", authority
-        ].join(protocol == "mailto" ? "" : "//")
+        ].join(mailto? ? "" : "//")
       else
         authority
       end
@@ -205,10 +205,15 @@ module Furi
     end
 
     def request
+      return nil if !path && query_tokens.empty?
       result = []
       result << path!
       result << "?" << query_string if query_tokens.any?
       result.join
+    end
+
+    def request!
+      request || path!
     end
 
     def request=(string)
@@ -297,6 +302,9 @@ module Furi
       @protocol = protocol ? protocol.gsub(%r{:?/?/?\Z}, "").downcase : nil
     end
 
+    def protocol!
+      protocol || default_protocol_for_port || 'http' # Web Rules Them All!
+    end
 
     def directory
       path_tokens[0..-2].join("/")
@@ -411,6 +419,7 @@ module Furi
     end
 
     def resource
+      return nil unless request
       [request, anchor].compact.join("#")
     end
 
@@ -427,7 +436,7 @@ module Furi
     end
 
     def resource!
-      [request]
+      resource || request!
     end
 
     def host!
@@ -463,6 +472,15 @@ module Furi
       uri = to_s
       !!(uri.match(URI::RFC3986_Parser::RFC3986_URI) ||
          uri.match(URI::RFC3986_Parser::RFC3986_relative_ref))
+    end
+
+    def email=(email)
+      self.protocol ||= "mailto"
+      self.authority = email
+    end
+
+    def email
+      authority
     end
 
     protected
@@ -554,6 +572,19 @@ module Furi
 
     def host_tokens
       host.split(".")
+    end
+
+    def default_protocol_for_port
+      return nil unless port
+      PROTOCOLS.each do |protocol, data|
+        if data[:port] == port
+          return protocol
+        end
+      end
+    end
+
+    def mailto?
+      protocol == "mailto"
     end
   end
 end
