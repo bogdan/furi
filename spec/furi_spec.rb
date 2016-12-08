@@ -90,7 +90,7 @@ describe Furi do
 
         resource: '/articles/index.html?a=1&b=2#header',
         path: "/articles/index.html",
-        filename: 'index.html',
+        file: 'index.html',
         extension: 'html',
         query_string: "a=1&b=2",
         query_tokens: [['a', '1'], ['b', '2']],
@@ -139,7 +139,7 @@ describe Furi do
         resource: '/posts/index.html?a=b#zz',
         request: '/posts/index.html?a=b',
         location: 'http://gusiev.com',
-        filename: 'index.html',
+        file: 'index.html',
         extension: 'html',
       )
     end
@@ -161,8 +161,8 @@ describe Furi do
       expect("/posts/").to have_parts(
         path: '/posts/',
         directory: '/posts',
-        filename: nil,
-        'filename!' =>  '',
+        file: nil,
+        'file!' =>  '',
         extension: nil,
         home_page?: false,
       )
@@ -396,14 +396,14 @@ describe Furi do
       expect(Furi.replace("/articles/index?a=b", directory: '/posts')).to eq('/posts/index?a=b')
       expect(Furi.replace("/articles/index.html?a=b", directory: '/posts/')).to eq('/posts/index.html?a=b')
     end
-    it "replace filename" do
-      expect(Furi.replace("gusiev.com", filename: 'article')).to eq('gusiev.com/article')
-      expect(Furi.replace("gusiev.com/", filename: 'article')).to eq('gusiev.com/article')
-      expect(Furi.replace("gusiev.com/article1#header", filename: '/article2')).to eq('gusiev.com/article2#header')
-      expect(Furi.replace("gusiev.com/article#header", filename: nil)).to eq('gusiev.com/#header')
-      expect(Furi.replace("gusiev.com/articles/article1?a=b", filename: 'article2')).to eq('gusiev.com/articles/article2?a=b')
-      expect(Furi.replace("/articles/article1?a=b", filename: '/article2')).to eq('/articles/article2?a=b')
-      expect(Furi.replace("/articles/article1.xml?a=b", filename: 'article2.html')).to eq('/articles/article2.html?a=b')
+    it "replace file" do
+      expect(Furi.replace("gusiev.com", file: 'article')).to eq('gusiev.com/article')
+      expect(Furi.replace("gusiev.com/", file: 'article')).to eq('gusiev.com/article')
+      expect(Furi.replace("gusiev.com/article1#header", file: '/article2')).to eq('gusiev.com/article2#header')
+      expect(Furi.replace("gusiev.com/article#header", file: nil)).to eq('gusiev.com/#header')
+      expect(Furi.replace("gusiev.com/articles/article1?a=b", file: 'article2')).to eq('gusiev.com/articles/article2?a=b')
+      expect(Furi.replace("/articles/article1?a=b", file: '/article2')).to eq('/articles/article2?a=b')
+      expect(Furi.replace("/articles/article1.xml?a=b", file: 'article2.html')).to eq('/articles/article2.html?a=b')
     end
     it "replace extension" do
       expect(->{

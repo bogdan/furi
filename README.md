@@ -106,13 +106,13 @@ uri.merge_query(person: {email: 'a@b.com'})
     /      __|___   __|__    ______|______   |  _________|__________     ____|____   |
    /      /      \ /     \  /             \ / \/                    \   /         \ / \
    http://username:zhongguo@www.example.com:80/hello/world/article.html?name=bogdan#info
-    \_/                     \_/  \___/  \_/    \__________/ \       \_/
-     |                       |     |     |           |       \       |
-  protocol             subdomain   | domainzone  directory    \  extension
-                                   |     |                     \_____/  
-                             domainname  /                        |     
-                                    \___/                     filename 
-                                      |                                 
+    \_/                     \_/  \___/  \_/    \__________/\     /  \_/
+     |                       |     |     |           |      \___/    |
+  protocol             subdomain   | domainzone  directory    |   extension
+                                   |     |                 filename  |       
+                             domainname  /                     \_____/       
+                                    \___/                         |          
+                                      |                          file                       
                                     domain                   
 ```
 
@@ -124,6 +124,7 @@ Giving credit...
 ## TODO
 
 * Improve URI.join algorithm to match the one used in Addressible library
+* Implement filename
 
 ## Contributing
 

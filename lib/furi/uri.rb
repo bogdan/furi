@@ -312,14 +312,14 @@ module Furi
 
     def directory=(string)
       string ||= "/"
-      if filename && string !~ %r{/\z}
+      if file && string !~ %r{/\z}
         string += '/'
       end
-      self.path = string + filename.to_s
+      self.path = string + file.to_s
     end
 
     def extension
-      return nil unless filename
+      return nil unless file
       file_tokens.size > 1 ? file_tokens.last : nil
     end
 
@@ -327,7 +327,7 @@ module Furi
       tokens = file_tokens
       case tokens.size
       when 0
-        raise Furi::FormattingError, "can not assign extension when there is no filename"
+        raise Furi::FormattingError, "can not assign extension when there is no file"
       when 1
         tokens.push(string)
       else
@@ -337,10 +337,10 @@ module Furi
           tokens.pop
         end
       end
-      self.filename = tokens.join(".")
+      self.file = tokens.join(".")
     end
 
-    def filename=(name)
+    def file=(name)
       unless name
         return unless path
       else
@@ -395,13 +395,13 @@ module Furi
       self.protocol = find_protocol_for_ssl(ssl)
     end
 
-    def filename
+    def file
       result = path_tokens.last
       result == "" ? nil : result
     end
 
-    def filename!
-      filename || ''
+    def file!
+      file || ''
     end
 
     def default_web_port?
@@ -486,7 +486,7 @@ module Furi
     protected
 
     def file_tokens
-      filename ? filename.split('.') : []
+      file ? file.split('.') : []
     end
 
     def query_level?
