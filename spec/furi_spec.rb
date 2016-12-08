@@ -554,6 +554,21 @@ describe Furi do
       expect(Furi.defaults("//gusiev.com", query_string: 'b=2')).to eq('//gusiev.com?b=2')
       expect(Furi.defaults("//gusiev.com?a=1&b=2", query: '?a=3')).to eq('//gusiev.com?a=1&b=2')
     end
+    it "should set file" do
+      expect(Furi.defaults("gusiev.com?a=1", file: 'index.html')).to eq('gusiev.com/index.html?a=1')
+      expect(Furi.defaults("gusiev.com/posts?a=1", file: 'index.html')).to eq('gusiev.com/posts?a=1')
+      expect(Furi.defaults("gusiev.com/posts/?a=1", file: 'index.html')).to eq('gusiev.com/posts/index.html?a=1')
+      expect(Furi.defaults("gusiev.com/posts/?a=1", file: 'index.html')).to eq('gusiev.com/posts/index.html?a=1')
+    end
+    it "should set extension" do
+      expect {
+        Furi.defaults("gusiev.com?a=1", extension: 'html')
+      }.to raise_error(Furi::FormattingError)
+      expect(Furi.defaults("gusiev.com?a=1", file: 'index.html', extension: 'html')).to eq('gusiev.com/index.html?a=1')
+      expect(Furi.defaults("gusiev.com/posts?a=1", extension: 'html')).to eq('gusiev.com/posts.html?a=1')
+      #expect(Furi.defaults("gusiev.com/posts/?a=1", file: 'index.html')).to eq('gusiev.com/posts/index.html?a=1')
+      #expect(Furi.defaults("gusiev.com/posts/?a=1", file: 'index.html')).to eq('gusiev.com/posts/index.html?a=1')
+    end
   end
 
   describe "#==" do
