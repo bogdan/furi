@@ -20,7 +20,7 @@ module Furi
     end
 
     def self.raise_parse_error(token)
-      raise ArgumentError, "Can not parse query token #{token.inspect}"
+      raise QueryParseError, "Can not parse query token #{token.inspect}"
     end
 
     def initialize(name, value)
@@ -40,8 +40,8 @@ module Furi
 
     def to_s
       encoded_key = ::URI.encode_www_form_component(name.to_s)
-      
-      !value.nil? ? 
+
+      !value.nil? ?
         "#{encoded_key}=#{::URI.encode_www_form_component(value.to_s)}" :
         encoded_key
     end
