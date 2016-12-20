@@ -25,7 +25,7 @@ module Furi
       when ::URI::Generic
         parse_uri_string(argument.to_s)
       else
-        raise ArgumentError, "wrong Uri argument"
+        raise ParseError, "wrong Uri argument"
       end
     end
 
@@ -77,7 +77,7 @@ module Furi
         self.query_tokens += Furi.query_tokens(query)
       when nil
       else
-        raise ArgumentError, "#{query.inspect} can not be merged"
+        raise QueryParseError, "#{query.inspect} can not be merged"
       end
     end
 
@@ -244,7 +244,7 @@ module Furi
         @query = value
       when nil
       else
-        raise ArgumentError, 'Query can only be Hash or String'
+        raise QueryParseError, 'Query can only be Hash or String'
       end
     end
 

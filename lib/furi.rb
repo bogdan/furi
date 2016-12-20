@@ -152,7 +152,7 @@ module Furi
         QueryToken.parse(p)
       end
     else
-      raise ArgumentError, "Can not parse #{query.inspect} query tokens"
+      raise QueryParseError, "can not parse #{query.inspect} query tokens"
     end
   end
 
@@ -175,7 +175,16 @@ module Furi
     end.reduce(:join)
   end
 
-  class FormattingError < StandardError
+  class Error < StandardError
+  end
+
+  class FormattingError < Error
+  end
+
+  class ParseError < Error
+  end
+
+  class QueryParseError < Error
   end
 
   protected
@@ -195,13 +204,13 @@ module Furi
       result
     when Array
       if namespace.nil? || namespace.empty?
-        raise ArgumentError, "Can not serialize Array without namespace"
+        raise FormattingError, "Can not serialize Array without namespace"
       end
 
       namespace = "#{namespace}[]"
       query.map do |item|
         if item.is_a?(Array)
-          raise ArgumentError, "Can not serialize #{item.inspect} as element of an Array"
+          raise FormattingError, "Can not serialize #{item.inspect} as element of an Array"
         end
         serialize_tokens(item, namespace)
       end
@@ -227,14 +236,14 @@ module Furi
     elsif after == "[]"
       current ||= []
       unless current.is_a?(Array)
-        raise TypeError, "expected Array (got #{current.class}) for param `#{namespace}'"
+        raise QueryParseError, "expected Array (got #{current.class}) for param `#{namespace}'"
       end
       current << value
     elsif after =~ %r(^\[\]\[([^\[\]]+)\]$) || after =~ %r(^\[\](.+)$)
       child_key = $1
       current ||= []
       unless current.is_a?(Array)
-        raise TypeError, "expected Array (got #{current.class}) for param `#{namespace}'"
+        raise QueryParseError, "expected Array (got #{current.class}) for param `#{namespace}'"
       end
       if current.last.is_a?(Hash) && !current.last.key?(child_key)
         parse_query_token(current.last, child_key, value)
@@ -244,7 +253,7 @@ module Furi
     else
       current ||= {}
       unless current.is_a?(Hash)
-        raise TypeError, "expected Hash (got #{current.class}) for param `#{namespace}'"
+        raise QueryParseError, "expected Hash (got #{current.class}) for param `#{namespace}'"
       end
       current = parse_query_token(current, after, value)
     end

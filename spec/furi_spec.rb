@@ -638,10 +638,10 @@ describe Furi do
       expect(a: [1,{c: 2, b: 3}, 4]).to serialize_as(["a[]=1", "a[][c]=2", "a[][b]=3", "a[]=4"])
       expect(->{
         Furi.serialize([1,2])
-      }).to raise_error(ArgumentError)
+      }).to raise_error(Furi::FormattingError)
       expect(->{
         Furi.serialize(a: [1,[2]])
-      }).to raise_error(ArgumentError)
+      }).to raise_error(Furi::FormattingError)
 
 
       params = { b:{ c:3, d:[4,5], e:{ x:[6], y:7, z:[8,9] }}};
@@ -737,13 +737,13 @@ describe Furi do
       should eq "x" => {"y" => [{"z" => "1", "w" => "a"}, {"z" => "2", "w" => "3"}]}
 
     lambda { Furi.parse_query("x[y]=1&x[y]z=2") }.
-      should raise_error(TypeError,  "expected Hash (got String) for param `y'")
+      should raise_error(Furi::QueryParseError,  "expected Hash (got String) for param `y'")
 
     lambda { Furi.parse_query("x[y]=1&x[]=1") }.
-      should raise_error(TypeError, /expected Array \(got [^)]*\) for param `x'/)
+      should raise_error(Furi::QueryParseError, /expected Array \(got [^)]*\) for param `x'/)
 
     lambda { Furi.parse_query("x[y]=1&x[y][][w]=2") }.
-      should raise_error(TypeError, "expected Array (got String) for param `y'")
+      should raise_error(Furi::QueryParseError, "expected Array (got String) for param `y'")
     end
 
   end
