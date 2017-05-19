@@ -178,7 +178,7 @@ module Furi
         result << "?" << query_string
       end
       if anchor
-        result << "#" << anchor
+        result << encoded_anchor
       end
       result.join
     end
@@ -420,7 +420,7 @@ module Furi
 
     def resource
       return nil unless request
-      [request, anchor].compact.join("#")
+      request + encoded_anchor
     end
 
     def resource=(value)
@@ -531,7 +531,7 @@ module Furi
     def parse_anchor_and_query(string)
       string ||= ''
       string, *anchor = string.split("#")
-      self.anchor = anchor.join("#")
+      self.anchor = ::URI.decode(anchor.join("#"))
       if string && string.include?("?")
         string, query_string = string.split("?", 2)
         self.query_tokens = query_string
@@ -585,6 +585,11 @@ module Furi
 
     def mailto?
       protocol == "mailto"
+    end
+
+    def encoded_anchor
+      return "" unless anchor
+      "#" + ::URI.encode(anchor)
     end
   end
 end

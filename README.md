@@ -125,6 +125,10 @@ Giving credit...
 
 * Improve URI.join algorithm to match the one used in Addressible library
 * Implement filename
+* Encoding/Decoding special characters:
+  * path
+  * query
+  * fragment
 
 ## Contributing
 
