@@ -1,4 +1,6 @@
 # Furi
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbogdan%2Ffuri.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbogdan%2Ffuri?ref=badge_shield)
+
 
 Furi is a Friendly URI parsing library.
 Furi's philosophy is to make any operation possible in ONE LINE OF CODE.
@@ -135,3 +137,7 @@ Giving credit...
 Contribute in the way you want. Branch names and other bla-bla-bla do not matter.
 
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbogdan%2Ffuri.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbogdan%2Ffuri?ref=badge_large)
