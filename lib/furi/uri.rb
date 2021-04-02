@@ -531,7 +531,7 @@ module Furi
     def parse_anchor_and_query(string)
       string ||= ''
       string, *anchor = string.split("#")
-      self.anchor = ::URI.decode(anchor.join("#"))
+      self.anchor = ::URI::DEFAULT_PARSER.unescape(anchor.join("#"))
       if string && string.include?("?")
         string, query_string = string.split("?", 2)
         self.query_tokens = query_string
@@ -589,7 +589,7 @@ module Furi
 
     def encoded_anchor
       return "" unless anchor
-      "#" + ::URI.encode(anchor)
+      "#" + ::URI::DEFAULT_PARSER.escape(anchor)
     end
   end
 end
