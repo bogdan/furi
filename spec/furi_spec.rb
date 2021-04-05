@@ -645,7 +645,7 @@ describe Furi do
 
 
       params = { b:{ c:3, d:[4,5], e:{ x:[6], y:7, z:[8,9] }}};
-      expect(CGI.unescape(Furi.serialize(params))).to eq("b[c]=3&b[d][]=4&b[d][]=5&b[e][x][]=6&b[e][y]=7&b[e][z][]=8&b[e][z][]=9")
+      expect(URI.decode_www_form_component(Furi.serialize(params))).to eq("b[c]=3&b[d][]=4&b[d][]=5&b[e][x][]=6&b[e][y]=7&b[e][z][]=8&b[e][z][]=9")
 
     end
   end

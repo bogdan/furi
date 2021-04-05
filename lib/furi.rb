@@ -172,7 +172,9 @@ module Furi
   def self.join(*uris)
     uris.map do |uri|
       Furi.parse(uri)
-    end.reduce(:join)
+    end.reduce do |memo, uri|
+      memo.send(:join, uri)
+    end
   end
 
   class Error < StandardError

@@ -1,6 +1,8 @@
 # Furi
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbogdan%2Ffuri.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbogdan%2Ffuri?ref=badge_shield)
 
+[![Gem Version](https://badge.fury.io/rb/furi.svg)](https://badge.fury.io/rb/furi)
+[![Build Status](https://github.com/bogdan/furi/workflows/CI/badge.svg?branch=master)](https://github.com/bogdan/furi/actions)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbogdan%2Ffuri.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbogdan%2Ffuri?ref=badge_shield)
 
 Furi is a Friendly URI parsing library.
 Furi's philosophy is to make any operation possible in ONE LINE OF CODE.
@@ -11,7 +13,7 @@ If there is an operation that takes more than one line of code to do with Furi, 
 
 Add this line to your application's Gemfile:
 
-```ruby
+``` ruby
 gem 'furi'
 ```
 
@@ -26,10 +28,9 @@ Or install it yourself as:
 ## Usage
 
 I'll say it again: any operation should take exacly one line of code!
-Here are basic: 
+Here are basic:
 
 ### Utility Methods
-
 
 Parsing the URI fragments:
 
@@ -41,31 +42,29 @@ Furi.port!("http://gusiev.com") # => 80
 
 Updating the URI parts:
 
-```
+``` ruby
 Furi.update("http://gusiev.com", protocol: '') # => "//gusiev.com"
-Furi.update("http://gusiev.com?source=google", query: {email: "a@b.com"}) 
+Furi.update("http://gusiev.com?source=google", query: {email: "a@b.com"})
     # => "http://gusiev.com?source=google&email=a@b.com"
-Furi.replace("http://gusiev.com?source=google", query: {email: "a@b.com"}) 
+Furi.replace("http://gusiev.com?source=google", query: {email: "a@b.com"})
     # => "http://gusiev.com?email=a@b.com"
 
 Furi.defaults("http://gusiev.com", subdomain: 'www') # => "http://www.gusiev.com"
 Furi.defaults("http://blog.gusiev.com", subdomain: 'www') # => "http://blog.gusiev.com"
-
 ```
 
 Building an URI from initial parts:
 
 ``` ruby
-
-Furi.build(protocol: '//', host: 'gusiev.com', path: '/assets/application.js') 
+Furi.build(protocol: '//', host: 'gusiev.com', path: '/assets/application.js')
     # => "//gusiev.com/assets/application.js"
 ```
 
 ### Working with Object
 
 ``` ruby
-uri = Furi.parse("gusiev.com") 
-    # => #<Furi::Uri "gusiev.com"> 
+uri = Furi.parse("gusiev.com")
+    # => #<Furi::Uri "gusiev.com">
 
 uri.port     # => nil
 uri.port!    # => 80
@@ -94,12 +93,12 @@ uri.merge_query(person: {email: 'a@b.com'})
 ## Reference
 
 ```
-                location                                            resource       
-                    |                                                ___|___     
-             _______|_______                                        /       \     
-            /               \                                      /         \    
-           /             authority                             request        \   
-          /        __________|_________                           |            \  
+                location                                            resource
+                    |                                                ___|___
+             _______|_______                                        /       \
+            /               \                                      /         \
+           /             authority                             request        \
+          /        __________|_________                           |            \
          /        /                    \                    ______|______       \
         /    userinfo                hostinfo              /             \       \
        /       __|___                ___|___              /               \       \
@@ -111,21 +110,19 @@ uri.merge_query(person: {email: 'a@b.com'})
     \_/                     \_/  \___/  \_/    \__________/\     /  \_/
      |                       |     |     |           |      \___/    |
   protocol             subdomain   | domainzone  directory    |   extension
-                                   |     |                 filename  |       
-                             domainname  /                     \_____/       
-                                    \___/                         |          
-                                      |                          file                       
-                                    domain                   
+                                   |     |                 filename  |
+                             domainname  /                     \_____/
+                                    \___/                         |
+                                      |                          file
+                                    domain
 ```
-
 
 Originated from [URI.js](http://medialize.github.io/URI.js/about-uris.html) parsing library.
 Giving credit...
 
-
 ## TODO
 
-* Improve URI.join algorithm to match the one used in Addressible library
+* Improve URI.join algorithm to match the one used in Addressable library
 * Implement filename
 * Encoding/Decoding special characters:
   * path
@@ -136,8 +133,6 @@ Giving credit...
 
 Contribute in the way you want. Branch names and other bla-bla-bla do not matter.
 
-
-
-
 ## License
+
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbogdan%2Ffuri.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbogdan%2Ffuri?ref=badge_large)
