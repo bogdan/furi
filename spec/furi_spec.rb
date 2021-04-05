@@ -62,8 +62,6 @@ describe Furi do
     SerializeAs.new(value)
   end
 
-
-
   describe ".parse" do
 
     it "raises on empty string" do
@@ -287,6 +285,14 @@ describe Furi do
         path: '/index',
       )
     end
+
+    it "parses anchor with special characters" do
+      expect("/index#c%20d").to have_parts(
+        anchor: 'c d',
+        path: '/index',
+      )
+    end
+
     it "parses blank port with protocol" do
       expect("http://gusiev.com:/hello").to have_parts(
         path: '/hello',
@@ -518,7 +524,10 @@ describe Furi do
       expect(Furi.build(protocol: 'mailto', username: "bogdan", host: 'gusiev.com')).to eq('mailto:bogdan@gusiev.com')
       expect(Furi.build(email: "bogdan@gusiev.com")).to eq('mailto:bogdan@gusiev.com')
       expect(Furi.build(protocol: 'mailto', query: {subject: 'Hello', body: "Welcome"})).to eq('mailto:?subject=Hello&body=Welcome')
+    end
 
+    it "escapes anchor special characters" do
+      expect(Furi.build(path: "/index", anchor: 'a b')).to eq('/index#a%20b')
     end
   end
 
