@@ -135,7 +135,7 @@ module Furi
     end
 
     def hostinfo
-      return host unless explicit_port?
+      return host unless custom_port?
       if port && !host
         raise Furi::FormattingError, "can not build URI with port but without host"
       end
@@ -483,6 +483,14 @@ module Furi
       authority
     end
 
+    def custom_port?
+      port && port != default_port
+    end
+
+    def mailto?
+      protocol == "mailto"
+    end
+
     protected
 
     def file_tokens
@@ -491,10 +499,6 @@ module Furi
 
     def query_level?
       !!@query
-    end
-
-    def explicit_port?
-      port && port != default_port
     end
 
     def parse_uri_string(string)
@@ -581,10 +585,6 @@ module Furi
           return protocol
         end
       end
-    end
-
-    def mailto?
-      protocol == "mailto"
     end
 
     def encoded_anchor
