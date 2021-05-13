@@ -72,7 +72,10 @@ module Furi
     def merge_query(query)
       case query
       when Hash
-        self.query = self.query.merge(Furi::Utils.stringify_keys(query))
+        self.query = Furi::Utils.deep_merge(
+          self.query,
+          Furi::Utils.stringify_keys(query)
+        )
       when String, Array
         self.query_tokens += Furi.query_tokens(query)
       when nil

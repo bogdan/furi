@@ -10,7 +10,17 @@ module Furi
         end
         result
       end
+
+      def deep_merge(current_hash, other_hash)
+        current_hash.merge(other_hash) do |key, this_val, other_val|
+         if this_val.is_a?(Hash) && other_val.is_a?(Hash)
+           deep_merge(this_val, other_val)
+         else
+           other_val
+         end
+       end
+      end
     end
   end
 end
- 
+

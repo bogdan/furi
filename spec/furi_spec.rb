@@ -625,6 +625,16 @@ describe Furi do
     end
   end
 
+  describe "#merge_query" do
+    it "works" do
+      uri = Furi.parse('http://gusiev.com')
+      expect(uri.merge_query({user: {first_name: 'Bogdan'}}))
+      expect(uri.query_string).to eq('user%5Bfirst_name%5D=Bogdan')
+      expect(uri.merge_query({user: {last_name: 'Gusiev'}}))
+      expect(uri.query_string).to eq('user%5Bfirst_name%5D=Bogdan&user%5Blast_name%5D=Gusiev')
+    end
+  end
+
   describe "serialize" do
     it "should work" do
       expect({a: 'b'}).to serialize_as("a=b")
