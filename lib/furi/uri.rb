@@ -241,10 +241,8 @@ module Furi
         query
       when String, Array
         self.query_tokens = value
-        @query = nil
       when Hash
         self.query_tokens = value
-        @query = value
       when nil
       else
         raise QueryParseError, 'Query can only be Hash or String'
@@ -276,7 +274,7 @@ module Furi
     end
 
     def query_tokens=(tokens)
-      @query = nil
+      @query = tokens.is_a?(Hash) ? tokens : nil
       @query_tokens = Furi.query_tokens(tokens)
     end
 
