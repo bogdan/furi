@@ -58,6 +58,20 @@ Building an URI from initial parts:
 ``` ruby
 Furi.build(protocol: '//', host: 'gusiev.com', path: '/assets/application.js')
     # => "//gusiev.com/assets/application.js"
+
+Furi.build(
+  location: 'https://calendar.google.com',
+  path: '/calendar/render',
+  query: {
+    action: 'TEMPLATE',
+    text: 'Seven Figure Club Meeting',
+    dates: [Time.now + 2.hours, Time.now + 3.hours].map do |t|
+      t.strftime("%Y%m%dT%H%M%SZ")
+    end.join('/'),
+    details: 'Seven Figure Club invites to the discussion with other founders to one of the topics you have expressed your interest to.',
+    add: ["bogdan@example.com", "brad@example.com"].join(',')
+  }
+)
 ```
 
 ### Working with Object
