@@ -412,9 +412,9 @@ describe Furi do
       expect(Furi.replace("/articles/article1.xml?a=b", file: 'article2.html')).to eq('/articles/article2.html?a=b')
     end
     it "replace extension" do
-      expect(->{
-       Furi.replace("gusiev.com/", extension: 'xml')
-      }).to raise_error(Furi::FormattingError)
+      expect {
+        Furi.replace("gusiev.com/", extension: 'xml')
+      }.to raise_error(Furi::FormattingError)
       expect(Furi.replace("gusiev.com/article#header", extension: 'html')).to eq('gusiev.com/article.html#header')
       expect(Furi.replace("gusiev.com/article.html?header", extension: nil)).to eq('gusiev.com/article?header')
       expect(Furi.replace("gusiev.com/article.xml?a=b", extension: 'html')).to eq('gusiev.com/article.html?a=b')
@@ -511,12 +511,12 @@ describe Furi do
       expect(Furi.build(protocol: 'http', host: 'hello.com', port: 80)).to eq('http://hello.com')
       expect(Furi.build(query: 'a=b')).to eq('/?a=b')
 
-      expect(->{
+      expect {
         Furi.build(host: nil, port: 80)
-      }).to raise_error(Furi::FormattingError)
-      expect(->{
+      }.to raise_error(Furi::FormattingError)
+      expect {
         Furi.build(host: 'localhost', password: 'pass')
-      }).to raise_error(Furi::FormattingError)
+      }.to raise_error(Furi::FormattingError)
     end
 
     it "builds protocol" do
@@ -655,12 +655,12 @@ describe Furi do
       expect("a" => [1, 2], "b" => "blah" ).to serialize_as("a%5B%5D=1&a%5B%5D=2&b=blah")
 
       expect(a: [1,{c: 2, b: 3}, 4]).to serialize_as(["a[]=1", "a[][c]=2", "a[][b]=3", "a[]=4"])
-      expect(->{
+      expect {
         Furi.serialize([1,2])
-      }).to raise_error(Furi::FormattingError)
-      expect(->{
+      }.to raise_error(Furi::FormattingError)
+      expect {
         Furi.serialize(a: [1,[2]])
-      }).to raise_error(Furi::FormattingError)
+      }.to raise_error(Furi::FormattingError)
 
 
       params = { b:{ c:3, d:[4,5], e:{ x:[6], y:7, z:[8,9] }}};
@@ -755,16 +755,15 @@ describe Furi do
     Furi.parse_query("x[y][][z]=1&x[y][][w]=a&x[y][][z]=2&x[y][][w]=3").
       should eq "x" => {"y" => [{"z" => "1", "w" => "a"}, {"z" => "2", "w" => "3"}]}
 
-    lambda { Furi.parse_query("x[y]=1&x[y]z=2") }.
-      should raise_error(Furi::QueryParseError,  "expected Hash (got String) for param `y'")
+    expect { Furi.parse_query("x[y]=1&x[y]z=2") }.
+      to raise_error(Furi::QueryParseError,  "expected Hash (got String) for param `y'")
 
-    lambda { Furi.parse_query("x[y]=1&x[]=1") }.
-      should raise_error(Furi::QueryParseError, /expected Array \(got [^)]*\) for param `x'/)
+    expect { Furi.parse_query("x[y]=1&x[]=1") }.
+      to raise_error(Furi::QueryParseError, /expected Array \(got [^)]*\) for param `x'/)
 
-    lambda { Furi.parse_query("x[y]=1&x[y][][w]=2") }.
-      should raise_error(Furi::QueryParseError, "expected Array (got String) for param `y'")
+    expect { Furi.parse_query("x[y]=1&x[y][][w]=2") }.
+      to raise_error(Furi::QueryParseError, "expected Array (got String) for param `y'")
     end
-
   end
 
   it "should support inspect" do
