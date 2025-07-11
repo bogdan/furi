@@ -542,6 +542,13 @@ describe Furi do
     it "updates query_string" do
       expect(Furi.update("//gusiev.com?a=1&b=2", query_string: '?a=3')).to eq('//gusiev.com?a=1&b=2&a=3')
     end
+
+    it "updates path" do
+      expect(Furi.update("https://www.google.com/maps", path: "place/1.23,3.28")).to eq("https://www.google.com/maps/place/1.23,3.28")
+      expect(Furi.update("https://www.google.com/maps", path: "/account")).to eq("https://www.google.com/account")
+      expect(Furi.update("https://www.google.com/maps", path: "..")).to eq("https://www.google.com/")
+      expect(Furi.update("https://www.google.com/maps", path: nil)).to eq("https://www.google.com")
+    end
   end
 
   describe ".defaults" do

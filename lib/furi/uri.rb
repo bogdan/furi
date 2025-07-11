@@ -1,3 +1,5 @@
+require 'pathname'
+
 module Furi
   class Uri
 
@@ -44,6 +46,12 @@ module Furi
         case part.to_sym
         when :query, :query_tokens, :query_string
           merge_query(value)
+        when :path
+          if value
+            self[part] = Pathname.new(self[part]).join(value).to_s
+          else
+            self[part] = value
+          end
         else
           self[part] = value
         end
