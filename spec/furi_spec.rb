@@ -548,6 +548,7 @@ describe Furi do
       expect(Furi.update("https://www.google.com/maps", path: "/account")).to eq("https://www.google.com/account")
       expect(Furi.update("https://www.google.com/maps", path: "..")).to eq("https://www.google.com/")
       expect(Furi.update("https://www.google.com/maps", path: nil)).to eq("https://www.google.com")
+      expect(Furi.update("https://www.google.com", path: "/maps")).to eq("https://www.google.com/maps")
     end
   end
 

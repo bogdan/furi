@@ -47,7 +47,7 @@ module Furi
         when :query, :query_tokens, :query_string
           merge_query(value)
         when :path
-          if value
+          if value && self[part]
             self[part] = Pathname.new(self[part]).join(value).to_s
           else
             self[part] = value
