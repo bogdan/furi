@@ -1,3 +1,11 @@
+# v0.2.6
+
+* Support `filename` part replacement and extraction
+
+# v0.2.5
+
+* Fix replacement of path starting with `/`
+
 # v0.2.4
 
 * Improved `Furi.update` behavior for `path:` overrides:
