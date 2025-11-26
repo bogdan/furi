@@ -430,6 +430,8 @@ describe Furi do
       expect(Furi.replace("gusiev.com/article#header", extension: 'html')).to eq('gusiev.com/article.html#header')
       expect(Furi.replace("gusiev.com/article.html?header", extension: nil)).to eq('gusiev.com/article?header')
       expect(Furi.replace("gusiev.com/article.xml?a=b", extension: 'html')).to eq('gusiev.com/article.html?a=b')
+      expect(Furi.replace("gusiev.com/article.html.erb?a=b", extension: 'html')).to eq('gusiev.com/article.html?a=b')
+      expect(Furi.replace("gusiev.com/article.html?a=b", extension: 'html.erb')).to eq('gusiev.com/article.html.erb?a=b')
     end
     it "replace resource" do
       expect(Furi.replace("gusiev.com", resource: '/article?a=1#hello')).to eq('gusiev.com/article?a=1#hello')

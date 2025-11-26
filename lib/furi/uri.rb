@@ -353,7 +353,7 @@ module Furi
         tokens.push(string)
       else
         if string
-          tokens[-1] = string
+          tokens = [tokens.first, string]
         else
           tokens.pop
         end
