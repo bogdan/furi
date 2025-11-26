@@ -327,9 +327,21 @@ module Furi
       self.path = string + file.to_s
     end
 
+    def filename
+      return nil unless file
+      file_tokens.first
+    end
+
+    def filename=(value)
+      t = file_tokens
+      t[0] = value
+      self.file = t.join(".")
+    end
+
     def extension
       return nil unless file
-      file_tokens.size > 1 ? file_tokens.last : nil
+      tokens = file_tokens[1..-1]
+      tokens.any? ? tokens.join(".") : nil
     end
 
     def extension=(string)

@@ -9,13 +9,16 @@ module Furi
 
   ESSENTIAL_PARTS =  [
     :anchor, :protocol, :query_tokens,
-    :path, :host, :port, :username, :password
+    :path, :host, :port, :username, :password,
+    :filename,
   ]
+
   COMBINED_PARTS = [
     :hostinfo, :userinfo, :authority, :ssl, :domain, :domainname,
     :domainzone, :request, :location, :query,
     :directory, :extension, :file
   ]
+
   PARTS = ESSENTIAL_PARTS + COMBINED_PARTS
 
   ALIASES = {

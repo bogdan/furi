@@ -89,6 +89,7 @@ describe Furi do
         resource: '/articles/index.html?a=1&b=2#header',
         path: "/articles/index.html",
         file: 'index.html',
+        filename: 'index',
         extension: 'html',
         query_string: "a=1&b=2",
         query_tokens: [['a', '1'], ['b', '2']],
@@ -138,6 +139,7 @@ describe Furi do
         request: '/posts/index.html?a=b',
         location: 'http://gusiev.com',
         file: 'index.html',
+        filename: 'index',
         extension: 'html',
       )
     end
@@ -160,6 +162,7 @@ describe Furi do
         path: '/posts/',
         directory: '/posts',
         file: nil,
+        filename: nil,
         'file!' =>  '',
         extension: nil,
         home_page?: false,
@@ -411,6 +414,15 @@ describe Furi do
       expect(Furi.replace("/articles/article1?a=b", file: '/article2')).to eq('/articles/article2?a=b')
       expect(Furi.replace("/articles/article1.xml?a=b", file: 'article2.html')).to eq('/articles/article2.html?a=b')
     end
+    it "replace filename" do
+      expect(Furi.replace("gusiev.com", filename: 'article')).to eq('gusiev.com/article')
+      expect(Furi.replace("gusiev.com/", filename: 'article')).to eq('gusiev.com/article')
+      expect(Furi.replace("gusiev.com/article1#header", filename: '/article2')).to eq('gusiev.com/article2#header')
+      expect(Furi.replace("gusiev.com/article#header", filename: nil)).to eq('gusiev.com/#header')
+      expect(Furi.replace("gusiev.com/articles/article1?a=b", filename: 'article2')).to eq('gusiev.com/articles/article2?a=b')
+      expect(Furi.replace("/articles/article1?a=b", filename: '/article2')).to eq('/articles/article2?a=b')
+      expect(Furi.replace("/articles/article1.xml?a=b", filename: 'article2')).to eq('/articles/article2.xml?a=b')
+    end
     it "replace extension" do
       expect {
         Furi.replace("gusiev.com/", extension: 'xml')
@@ -577,14 +589,18 @@ describe Furi do
       expect(Furi.defaults("gusiev.com/posts/?a=1", file: 'index.html')).to eq('gusiev.com/posts/index.html?a=1')
       expect(Furi.defaults("gusiev.com/posts/?a=1", file: 'index.html')).to eq('gusiev.com/posts/index.html?a=1')
     end
+    it "should set filename" do
+      expect(Furi.defaults("gusiev.com?a=1", filename: 'index')).to eq('gusiev.com/index?a=1')
+      expect(Furi.defaults("gusiev.com/posts?a=1", filename: 'index')).to eq('gusiev.com/posts?a=1')
+      expect(Furi.defaults("gusiev.com/posts/?a=1", filename: 'index')).to eq('gusiev.com/posts/index?a=1')
+      expect(Furi.defaults("gusiev.com/posts/?a=1", filename: 'index')).to eq('gusiev.com/posts/index?a=1')
+    end
     it "should set extension" do
       expect {
         Furi.defaults("gusiev.com?a=1", extension: 'html')
       }.to raise_error(Furi::FormattingError)
-      expect(Furi.defaults("gusiev.com?a=1", file: 'index.html', extension: 'html')).to eq('gusiev.com/index.html?a=1')
+      expect(Furi.defaults("gusiev.com?a=1", filename: 'index', extension: 'html')).to eq('gusiev.com/index.html?a=1')
       expect(Furi.defaults("gusiev.com/posts?a=1", extension: 'html')).to eq('gusiev.com/posts.html?a=1')
-      #expect(Furi.defaults("gusiev.com/posts/?a=1", file: 'index.html')).to eq('gusiev.com/posts/index.html?a=1')
-      #expect(Furi.defaults("gusiev.com/posts/?a=1", file: 'index.html')).to eq('gusiev.com/posts/index.html?a=1')
     end
   end
 
