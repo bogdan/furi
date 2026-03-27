@@ -207,11 +207,11 @@ module Furi
       end
     end
 
-    def origin
+    def endpoint
       [location, path].join
     end
 
-    def origin=(string)
+    def endpoint=(string)
       string ||= ""
       string = parse_protocol(string)
       authority, path = string.split("/", 2)

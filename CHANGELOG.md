@@ -1,12 +1,12 @@
-# v0.2.7
+# v0.2.8
 
-* Add `origin` part (location + path, without query string and anchor)
+* Add `endpoint` part (location + path, without query string and anchor)
 
   ```ruby
-  Furi.parse("http://gusiev.com/articles/index.html?a=1#top").origin
+  Furi.parse("http://gusiev.com/articles/index.html?a=1#top").endpoint
   # => "http://gusiev.com/articles/index.html"
 
-  Furi.replace("http://gusiev.com/index.html?a=1#top", origin: "http://gusiev.com/blog.html")
+  Furi.replace("http://gusiev.com/index.html?a=1#top", endpoint: "http://gusiev.com/blog.html")
   # => "http://gusiev.com/blog.html?a=1#top"
   ```
 

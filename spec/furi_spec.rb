@@ -95,7 +95,7 @@ describe Furi do
         query_tokens: [['a', '1'], ['b', '2']],
         query: {'a' => '1', 'b' => '2'},
         request: '/articles/index.html?a=1&b=2',
-        origin: 'http://user:pass@www.gusiev.com:8080/articles/index.html',
+        endpoint: 'http://user:pass@www.gusiev.com:8080/articles/index.html',
         anchor: 'header',
         fragment: 'header',
         home_page?: false,
@@ -116,7 +116,7 @@ describe Furi do
         resource: nil,
         resource!: '/',
         location: 'http://gusiev.com',
-        origin: 'http://gusiev.com',
+        endpoint: 'http://gusiev.com',
         home_page?: true,
       )
     end
@@ -503,8 +503,8 @@ describe Furi do
       expect(Furi.replace("http://gusiev.com:433/index.html", location: nil)).to eq('/index.html')
     end
 
-    it "replace origin" do
-      expect(Furi.replace("http://gusiev.com/index.html?a=1#top", origin: 'http://gusiev.com/blog.html')).to eq('http://gusiev.com/blog.html?a=1#top')
+    it "replace endpoint" do
+      expect(Furi.replace("http://gusiev.com/index.html?a=1#top", endpoint: 'http://gusiev.com/blog.html')).to eq('http://gusiev.com/blog.html?a=1#top')
     end
 
     it "replace query" do
