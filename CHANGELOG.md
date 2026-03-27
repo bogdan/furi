@@ -1,3 +1,15 @@
+# v0.2.7
+
+* Add `origin` part (location + path, without query string and anchor)
+
+  ```ruby
+  Furi.parse("http://gusiev.com/articles/index.html?a=1#top").origin
+  # => "http://gusiev.com/articles/index.html"
+
+  Furi.replace("http://gusiev.com/index.html?a=1#top", origin: "http://gusiev.com/blog.html")
+  # => "http://gusiev.com/blog.html?a=1#top"
+  ```
+
 # v0.2.6
 
 * Support `filename` part replacement and extraction

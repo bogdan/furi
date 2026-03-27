@@ -15,7 +15,7 @@ module Furi
 
   COMBINED_PARTS = [
     :hostinfo, :userinfo, :authority, :ssl, :domain, :domainname,
-    :domainzone, :request, :location, :query,
+    :domainzone, :request, :location, :origin, :query,
     :directory, :extension, :file
   ]
 

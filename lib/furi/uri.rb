@@ -207,6 +207,18 @@ module Furi
       end
     end
 
+    def origin
+      [location, path].join
+    end
+
+    def origin=(string)
+      string ||= ""
+      string = parse_protocol(string)
+      authority, path = string.split("/", 2)
+      self.authority = authority
+      self.path = path ? "/#{path}" : nil
+    end
+
     def location=(string)
       string ||= ""
       string  = string.gsub(%r(/\Z), '')
