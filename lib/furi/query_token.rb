@@ -1,5 +1,7 @@
 module Furi
   class QueryToken
+    include Comparable
+
     attr_reader :name, :value
 
     def self.parse(token)
@@ -30,6 +32,10 @@ module Furi
 
     def to_a
       [name, value]
+    end
+
+    def <=>(other)
+      to_s <=> other.to_s
     end
 
     def ==(other)

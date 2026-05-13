@@ -179,8 +179,10 @@ module Furi
   #   Furi.serialize({name: 'Bogdan', email: 'bogdan@example.com'}, "person")
   #     # => "person[name]=Bogdan&person[email]=bogdan%40example.com"
   #
-  def self.serialize(query, namespace = nil)
-    serialize_tokens(query, namespace).join("&")
+  def self.serialize(query, namespace = nil, sorted: false)
+    tokens = serialize_tokens(query, namespace)
+    tokens.sort! if sorted
+    tokens.join("&")
   end
 
   def self.join(*uris)

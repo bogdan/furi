@@ -699,11 +699,17 @@ class FuriSerializeTest < FuriBaseTest
     assert_serializes_as({"a" => [1, 2], "b" => "blah"}, "a%5B%5D=1&a%5B%5D=2&b=blah")
     assert_serializes_as({a: [1, {c: 2, b: 3}, 4]}, ["a[]=1", "a[][c]=2", "a[][b]=3", "a[]=4"])
     assert_raises(Furi::FormattingError) { Furi.serialize([1, 2]) }
-    assert_raises(Furi::FormattingError) { Furi.serialize(a: [1, [2]]) }
+    assert_raises(Furi::FormattingError) { Furi.serialize({a: [1, [2]]}) }
 
     params = {b: {c: 3, d: [4, 5], e: {x: [6], y: 7, z: [8, 9]}}}
     assert_equal "b[c]=3&b[d][]=4&b[d][]=5&b[e][x][]=6&b[e][y]=7&b[e][z][]=8&b[e][z][]=9",
       URI.decode_www_form_component(Furi.serialize(params))
+  end
+
+  def test_serialize_sorted
+    assert_equal "a=1&b=2&c=3", URI.decode_www_form_component(Furi.serialize({c: 3, a: 1, b: 2}, sorted: true))
+    assert_equal "c=3&a=1&b=2", URI.decode_www_form_component(Furi.serialize({c: 3, a: 1, b: 2}, sorted: false))
+    assert_equal "a=1&b=2&c=3", URI.decode_www_form_component(Furi.serialize({c: 3, a: 1, b: 2}, nil, sorted: true))
   end
 end
 
