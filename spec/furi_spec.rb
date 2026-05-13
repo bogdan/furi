@@ -70,6 +70,48 @@ describe Furi do
       }.to raise_error(Furi::FormattingError)
     end
 
+    describe "priority: :path" do
+      it "treats string before / as path when no protocol" do
+        uri = Furi.parse("gusiev.com/articles", priority: :path)
+        expect(uri.host).to be_nil
+        expect(uri.path).to eq("/gusiev.com/articles")
+      end
+
+      it "treats bare string as path when no protocol" do
+        uri = Furi.parse("gusiev.com", priority: :path)
+        expect(uri.host).to be_nil
+        expect(uri.path).to eq("/gusiev.com")
+      end
+
+      it "preserves query and anchor with priority: :path" do
+        uri = Furi.parse("gusiev.com/articles?a=1#top", priority: :path)
+        expect(uri.host).to be_nil
+        expect(uri.path).to eq("/gusiev.com/articles")
+        expect(uri.query_string).to eq("a=1")
+        expect(uri.anchor).to eq("top")
+      end
+
+      it "still parses host when protocol is present" do
+        uri = Furi.parse("http://gusiev.com/articles", priority: :path)
+        expect(uri.host).to eq("gusiev.com")
+        expect(uri.path).to eq("/articles")
+      end
+
+      it "still parses abstract protocol as host" do
+        uri = Furi.parse("//gusiev.com/articles", priority: :path)
+        expect(uri.host).to eq("gusiev.com")
+        expect(uri.path).to eq("/articles")
+      end
+    end
+
+    describe "priority: :host (default)" do
+      it "treats string before / as host when no protocol" do
+        uri = Furi.parse("gusiev.com/articles")
+        expect(uri.host).to eq("gusiev.com")
+        expect(uri.path).to eq("/articles")
+      end
+    end
+
     it "parses URL with everything" do
       expect("http://user:pass@www.gusiev.com:8080/articles/index.html?a=1&b=2#header").to have_parts(
         location: 'http://user:pass@www.gusiev.com:8080',
@@ -548,6 +590,21 @@ describe Furi do
 
     it "escapes anchor special characters" do
       expect(Furi.build(path: "/index", anchor: 'a b')).to eq('/index#a%20b')
+      expect(Furi.build(path: "/index", anchor: 'café')).to eq('/index#caf%C3%A9')
+      expect(Furi.build(path: "/index", anchor: 'a#b')).to eq('/index#a%23b')
+    end
+
+    it "escapes square brackets in anchor per RFC 3986" do
+      expect(Furi.build(path: "/index", anchor: 'a[b]')).to eq('/index#a%5Bb%5D')
+      expect(Furi.build(path: "/index", anchor: 'section[1]')).to eq('/index#section%5B1%5D')
+    end
+
+    it "does not escape valid fragment characters" do
+      expect(Furi.build(path: "/index", anchor: 'a?b')).to eq('/index#a?b')
+      expect(Furi.build(path: "/index", anchor: 'a/b')).to eq('/index#a/b')
+      expect(Furi.build(path: "/index", anchor: 'a@b')).to eq('/index#a@b')
+      expect(Furi.build(path: "/index", anchor: 'a:b')).to eq('/index#a:b')
+      expect(Furi.build(path: "/index", anchor: 'a!b')).to eq('/index#a!b')
     end
   end
 

@@ -17,8 +17,9 @@ module Furi
       end
     end
 
-    def initialize(argument)
+    def initialize(argument, priority: :host)
       @query_tokens = []
+      @priority = priority
       case argument
       when String
         parse_uri_string(argument)
@@ -524,6 +525,8 @@ module Furi
       protocol == "mailto"
     end
 
+    FRAGMENT_UNSAFE = /[^a-zA-Z0-9\-\._~!$&'()*+,;=:@\/?]/.freeze
+
     protected
 
     def file_tokens
@@ -541,6 +544,11 @@ module Furi
       string = parse_anchor_and_query(string)
 
       string = parse_protocol(string)
+
+      if protocol.nil? && @priority == :path
+        self.path = string.start_with?("/") ? string : "/#{string}"
+        return
+      end
 
       if string.include?("/")
         string, path = string.split("/", 2)
@@ -622,7 +630,7 @@ module Furi
 
     def encoded_anchor
       return "" unless anchor
-      "#" + ::URI::DEFAULT_PARSER.escape(anchor)
+      "#" + anchor.gsub(FRAGMENT_UNSAFE) { |c| c.bytes.map { |b| "%%%02X" % b }.join }
     end
   end
 end

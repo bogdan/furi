@@ -63,10 +63,22 @@ module Furi
 
   ROOT = '/'
 
-  # Parses a given string and return an URL object
-  # Optionally accepts parts to update the parsed URL object
-  def self.parse(argument, parts = nil)
-    Uri.new(argument).update(parts)
+  # Parses a URI string and returns a Furi::Uri object.
+  #
+  # @param argument [String] the URI string to parse
+  # @param parts [Hash, nil] optional parts to merge into the parsed URI
+  # @param priority [:host, :path] controls how a protocol-less string is interpreted.
+  #   When the URI has no protocol, the segment before the first +/+ is ambiguous.
+  #   - +:host+ (default) treats it as the host:
+  #       Furi.parse("gusiev.com/articles")
+  #       # host: "gusiev.com", path: "/articles"
+  #   - +:path+ treats the entire string as a path:
+  #       Furi.parse("gusiev.com/articles", priority: :path)
+  #       # host: nil, path: "/gusiev.com/articles"
+  #   URLs with an explicit protocol are unaffected by this option.
+  # @return [Furi::Uri]
+  def self.parse(argument, parts: nil, priority: :host)
+    Uri.new(argument, priority: priority).update(parts)
   end
 
   # Builds an URL from given parts
