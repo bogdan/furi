@@ -452,6 +452,10 @@ module Furi
       Furi::WEB_PROTOCOL.include?(protocol)
     end
 
+    def https?
+      protocol == "https"
+    end
+
     def abstract_protocol?
       protocol == ""
     end

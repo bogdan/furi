@@ -28,7 +28,7 @@ module Furi
     request: [:request_uri]
   }
 
-  DELEGATES = [:port!, :host!, :path!, :home_page?]
+  DELEGATES = [:port!, :host!, :path!, :home_page?, :https?]
 
   PROTOCOLS = {
     "http" => {port: 80, ssl: false},

@@ -661,6 +661,20 @@ class FuriAbstractProtocolTest < FuriBaseTest
   end
 end
 
+class FuriHttpsTest < FuriBaseTest
+  def test_https_predicate
+    assert Furi.parse('https://example.com').https?
+    refute Furi.parse('http://example.com').https?
+    refute Furi.parse('ftp://example.com').https?
+    refute Furi.parse('//example.com').https?
+  end
+
+  def test_https_via_module
+    assert Furi.https?('https://example.com')
+    refute Furi.https?('http://example.com')
+  end
+end
+
 class FuriCloneTest < FuriBaseTest
   def test_clone
     uri = Furi.parse('http://gusiev.com')
