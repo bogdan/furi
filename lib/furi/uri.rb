@@ -576,7 +576,7 @@ module Furi
     def parse_anchor_and_query(string)
       string ||= ''
       string, *anchor = string.split("#")
-      self.anchor = ::URI::DEFAULT_PARSER.unescape(anchor.join("#"))
+      self.anchor = ::URI::RFC2396_PARSER.unescape(anchor.join("#"))
       if string && string.include?("?")
         string, query_string = string.split("?", 2)
         self.query_tokens = query_string

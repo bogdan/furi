@@ -10,13 +10,12 @@ module Furi
   ESSENTIAL_PARTS =  [
     :anchor, :protocol, :query_tokens,
     :path, :host, :port, :username, :password,
-    :filename,
   ]
 
   COMBINED_PARTS = [
     :hostinfo, :userinfo, :authority, :ssl, :domain, :domainname,
     :domainzone, :request, :location, :endpoint, :query,
-    :directory, :extension, :file
+    :directory, :extension, :file, :filename
   ]
 
   PARTS = ESSENTIAL_PARTS + COMBINED_PARTS
@@ -90,7 +89,7 @@ module Furi
   end
 
   class << self
-    (PARTS + ALIASES.values.flatten + DELEGATES).each do |part|
+    (PARTS + ALIASES.values.flatten + DELEGATES - [:query_tokens]).each do |part|
       define_method(part) do |string|
         Uri.new(string)[part]
       end
