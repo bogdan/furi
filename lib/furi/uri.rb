@@ -182,12 +182,12 @@ module Furi
       self.hostinfo = string
     end
 
-    def to_s
+    def to_s(escape_query_param: nil)
       result = []
       result << location
       result << (host || mailto? ? path : path!)
       if query_tokens.any?
-        result << "?" << query_string
+        result << "?" << query_string(escape_query_param: escape_query_param)
       end
       if anchor
         result << encoded_anchor
@@ -393,8 +393,12 @@ module Furi
     end
 
 
-    def query_string
-      if query_level?
+    def query_string(escape_query_param: nil)
+      if escape_query_param
+        tokens = query_level? ? Furi.send(:serialize_tokens, query) : query_tokens
+        return nil if tokens.empty?
+        tokens.map { |t| escape_query_param.call(t.name, t.value) || t.to_s }.join("&")
+      elsif query_level?
         Furi.serialize(query)
       else
         query_tokens.any? ? query_tokens.join("&") : nil

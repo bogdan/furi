@@ -778,3 +778,49 @@ class FuriJoinTest < FuriBaseTest
     assert_equal "http://gusiev.com/photos", Furi.join("http://gusiev.com/slides", "../photos").to_s
   end
 end
+
+class FuriEscapeQueryParamTest < FuriBaseTest
+  def test_escape_query_param_custom_serialization
+    uri = Furi.parse("http://example.com?a=1&b=2")
+    result = uri.to_s(escape_query_param: ->(name, value) { "#{name}:#{value}" })
+    assert_equal "http://example.com?a:1&b:2", result
+  end
+
+  def test_escape_query_param_falls_back_to_default_when_nil_returned
+    uri = Furi.parse("http://example.com?a=hello world&b=2")
+    result = uri.to_s(escape_query_param: ->(name, value) {
+      name == "b" ? nil : "#{name}=#{value}"
+    })
+    assert_equal "http://example.com?a=hello world&b=2", result
+  end
+
+  def test_escape_query_param_with_hash_query
+    uri = Furi.parse("http://example.com")
+    uri.query = {a: "1", b: "2"}
+    result = uri.to_s(escape_query_param: ->(name, value) { "#{name}:#{value}" })
+    assert_equal "http://example.com?a:1&b:2", result
+  end
+
+  def test_escape_query_param_without_option_uses_default
+    uri = Furi.parse("http://example.com?a=1&b=2")
+    assert_equal "http://example.com?a=1&b=2", uri.to_s
+  end
+
+  def test_escape_query_param_parameter_filter_pattern
+    # Simulates Rails-style parameter filtering: replace sensitive values with
+    # "[FILTERED]", leave others unchanged (same object identity → nil → default).
+    filtered_keys = ["password"]
+    filter = ->(name, value) {
+      if filtered_keys.include?(name)
+        filtered = "[FILTERED]"
+      else
+        filtered = value
+      end
+      "#{CGI.escape(name)}=#{filtered}" unless filtered.equal?(value)
+    }
+
+    uri = Furi.parse("http://example.com?name=John&password=secret&token")
+    result = uri.to_s(escape_query_param: filter)
+    assert_equal "http://example.com?name=John&password=[FILTERED]&token", result
+  end
+end
