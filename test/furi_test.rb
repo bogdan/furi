@@ -371,6 +371,19 @@ class FuriParseTest < FuriBaseTest
       },
     })
   end
+
+  def test_parse_preserves_raw_query_string_on_emit
+    # Characters valid in query values per RFC 3986 (like ?) must not be
+    # re-encoded when a URL is parsed and re-emitted without modifying the query.
+    uri = Furi.parse("/baz?id=1+1&foo=?&bar=1", priority: :path)
+    assert_equal "/baz?id=1+1&foo=?&bar=1", uri.to_s
+  end
+
+  def test_parse_raw_query_cleared_when_query_is_updated
+    uri = Furi.parse("/baz?foo=?", priority: :path)
+    uri.query_tokens = {foo: "bar"}
+    assert_equal "/baz?foo=bar", uri.to_s
+  end
 end
 
 class FuriReplaceTest < FuriBaseTest

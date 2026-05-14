@@ -8,13 +8,13 @@ module Furi
   autoload :Utils, 'furi/utils'
 
   ESSENTIAL_PARTS =  [
-    :anchor, :protocol, :query_tokens,
+    :anchor, :protocol, :query_string,
     :path, :host, :port, :username, :password,
   ]
 
   COMBINED_PARTS = [
     :hostinfo, :userinfo, :authority, :ssl, :domain, :domainname,
-    :domainzone, :request, :location, :endpoint, :query,
+    :domainzone, :request, :location, :endpoint, :query, :query_tokens,
     :directory, :extension, :file, :filename
   ]
 

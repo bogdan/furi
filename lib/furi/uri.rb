@@ -3,7 +3,34 @@ require 'pathname'
 module Furi
   class Uri
 
-    attr_reader(*Furi::ESSENTIAL_PARTS)
+    attr_reader(*(Furi::ESSENTIAL_PARTS - [:query_string]))
+
+    def query_string(escape_query_param: nil)
+      if escape_query_param
+        tokens = query_tokens
+        return nil if tokens.empty?
+        tokens.map { |t| escape_query_param.call(t.name, t.value) || t.to_s }.join("&")
+      elsif @query
+        s = Furi.serialize(@query)
+        s.empty? ? nil : s
+      elsif @query_string
+        @query_string
+      elsif @query_tokens&.any?
+        @query_tokens.join("&")
+      end
+    end
+
+    def query_tokens
+      if @query_tokens
+        @query_tokens
+      elsif @query
+        Furi.send(:serialize_tokens, @query)
+      elsif @query_string
+        @query_tokens = Furi.query_tokens(@query_string)
+      else
+        []
+      end
+    end
 
     Furi::ALIASES.each do |origin, aliases|
       aliases.each do |aliaz|
@@ -18,7 +45,8 @@ module Furi
     end
 
     def initialize(argument, priority: :host)
-      @query_tokens = []
+      @query_tokens = nil
+      @query_string = nil
       @priority = priority
       case argument
       when String
@@ -186,8 +214,8 @@ module Furi
       result = []
       result << location
       result << (host || mailto? ? path : path!)
-      if query_tokens.any?
-        result << "?" << query_string(escape_query_param: escape_query_param)
+      if (qs = query_string(escape_query_param: escape_query_param))
+        result << "?" << qs
       end
       if anchor
         result << encoded_anchor
@@ -250,16 +278,15 @@ module Furi
     end
 
     def query
-      return @query if query_level?
-      @query = Furi.parse_query(query_tokens)
+      @query ||= Furi.parse_query(query_tokens)
     end
-
 
     def query=(value)
       case value
       when true
-        # Assuming that current query needs to be parsed to Hash
-        query
+        @query ||= Furi.parse_query(query_tokens)
+        @query_string = nil
+        @query_tokens = nil
       when String, Array
         self.query_tokens = value
       when Hash
@@ -297,11 +324,12 @@ module Furi
     def query_tokens=(tokens)
       if tokens.is_a?(Hash)
         @query = tokens
-        @query_tokens = Furi.send(:serialize_tokens, tokens)
+        @query_tokens = nil
       else
         @query = nil
         @query_tokens = Furi.query_tokens(tokens)
       end
+      @query_string = nil
     end
 
     def username=(username)
@@ -398,24 +426,14 @@ module Furi
     end
 
 
-    def query_string(escape_query_param: nil)
-      if escape_query_param
-        tokens = query_level? ? Furi.send(:serialize_tokens, query) : query_tokens
-        return nil if tokens.empty?
-        tokens.map { |t| escape_query_param.call(t.name, t.value) || t.to_s }.join("&")
-      elsif query_level?
-        Furi.serialize(query)
-      else
-        query_tokens.any? ? query_tokens.join("&") : nil
-      end
-    end
-
     def query_string!
       query_string || ""
     end
 
     def query_string=(string)
-      self.query_tokens = string.to_s
+      @query_string = string.nil? || string.empty? ? nil : string
+      @query_tokens = nil
+      @query = nil
     end
 
     def port!
@@ -554,9 +572,6 @@ module Furi
       file ? file.split('.') : []
     end
 
-    def query_level?
-      !!@query
-    end
 
     def parse_uri_string(string)
       if string.empty?
@@ -601,7 +616,7 @@ module Furi
       self.anchor = parser.unescape(anchor.join("#"))
       if string && string.include?("?")
         string, query_string = string.split("?", 2)
-        self.query_tokens = query_string
+        self.query_string = query_string
       end
       string
     end
