@@ -295,8 +295,13 @@ module Furi
     end
 
     def query_tokens=(tokens)
-      @query = tokens.is_a?(Hash) ? tokens : nil
-      @query_tokens = Furi.query_tokens(tokens)
+      if tokens.is_a?(Hash)
+        @query = tokens
+        @query_tokens = Furi.send(:serialize_tokens, tokens)
+      else
+        @query = nil
+        @query_tokens = Furi.query_tokens(tokens)
+      end
     end
 
     def username=(username)

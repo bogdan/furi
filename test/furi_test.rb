@@ -726,6 +726,12 @@ class FuriSerializeTest < FuriBaseTest
     assert_equal "a=1&b=2&c=3", URI.decode_www_form_component(Furi.serialize({c: 3, a: 1, b: 2}, nil, sorted: true))
   end
 
+  def test_build_with_empty_nested_hash_omits_query_string
+    assert_equal "/path", Furi.build(path: "/path", query: {a: {}})
+    assert_equal "/path", Furi.build(path: "/path", query: {a: [], b: {}})
+    assert_equal "/path?a=1", Furi.build(path: "/path", query: {a: 1, b: {}})
+  end
+
   def test_serialize_calls_to_param_on_keys_and_values
     to_param_obj = Class.new(String) { def to_param = "#{self}-1" }
     key1, val1 = to_param_obj.new("custom"),  to_param_obj.new("param")
