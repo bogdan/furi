@@ -573,6 +573,23 @@ class FuriBuildTest < FuriBaseTest
     assert_equal '/index#a:b', Furi.build(path: "/index", anchor: 'a:b')
     assert_equal '/index#a!b', Furi.build(path: "/index", anchor: 'a!b')
   end
+
+  def test_build_encodes_username_special_characters
+    assert_equal 'http://openid.aol.com%2Fnextangler:one+two%3F@host.com/',
+      Furi.build(protocol: 'http', username: 'openid.aol.com/nextangler', password: 'one two?', host: 'host.com', path: '/')
+    assert_equal 'http://user%40name:p%40ss@host.com/',
+      Furi.build(protocol: 'http', username: 'user@name', password: 'p@ss', host: 'host.com', path: '/')
+  end
+
+  def test_build_does_not_encode_plain_username_password
+    assert_equal 'http://user:pass@host.com/', Furi.build(protocol: 'http', username: 'user', password: 'pass', host: 'host.com', path: '/')
+  end
+
+  def test_username_accessor_returns_raw_value
+    uri = Furi::Uri.new({protocol: 'http', username: 'openid.aol.com/nextangler', password: 'one two?', host: 'host.com', path: '/'})
+    assert_equal 'openid.aol.com/nextangler', uri.username
+    assert_equal 'one two?', uri.password
+  end
 end
 
 class FuriUpdateTest < FuriBaseTest

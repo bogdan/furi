@@ -123,11 +123,11 @@ module Furi
 
     def userinfo
       if username
-        [username, password].compact.join(":")
+        result = URI.encode_www_form_component(username)
+        result += ":#{URI.encode_www_form_component(password)}" if password
+        result
       elsif password
         raise Furi::FormattingError, "can not build URI with password but without username"
-      else
-        nil
       end
     end
 
@@ -341,9 +341,10 @@ module Furi
     end
 
     def userinfo=(userinfo)
+      parser = defined?(::URI::RFC2396_PARSER) ? ::URI::RFC2396_PARSER : ::URI::DEFAULT_PARSER
       username, password = (userinfo || "").split(":", 2)
-      self.username = username
-      self.password = password
+      self.username = username ? parser.unescape(username) : nil
+      self.password = password ? parser.unescape(password) : nil
     end
 
     def path=(path)
