@@ -34,6 +34,10 @@ class FuriParseTest < FuriBaseTest
     assert_raises(Furi::FormattingError) { Furi.parse("") }
   end
 
+  def test_raises_parse_error_on_non_integer_port
+    assert_raises(Furi::ParseError) { Furi.parse("x-test+scheme.complex:redirect") }
+  end
+
   def test_priority_path_treats_string_before_slash_as_path
     uri = Furi.parse("gusiev.com/articles", priority: :path)
     assert_nil uri.host

@@ -304,7 +304,7 @@ module Furi
                   nil
                 else
                   unless port =~ /\A\s*\d+\s*\z/
-                    raise ArgumentError, "port should be an Integer >= 0"
+                    raise Furi::ParseError, "port should be an Integer >= 0, got: #{port.inspect}"
                   end
                   port.to_i
                 end
