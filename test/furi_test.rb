@@ -747,6 +747,13 @@ class FuriSerializeTest < FuriBaseTest
     result = URI.decode_www_form_component(Furi.serialize(input, sorted: true))
     assert_equal "foo[contents][][name]=gorby&foo[contents][][id]=123&foo[contents][][name]=puff&foo[contents][][d]=true", result
   end
+
+  def test_serialize_as_hash_converts_non_hash_objects
+    hash_like = Struct.new(:to_unsafe_h).new({name: "Bogdan", role: "admin"})
+    as_hash = ->(v) { v.respond_to?(:to_unsafe_h) ? v.to_unsafe_h : nil }
+    result = URI.decode_www_form_component(Furi.serialize({user: hash_like}, as_hash: as_hash))
+    assert_equal "user[name]=Bogdan&user[role]=admin", result
+  end
 end
 
 class FuriQueryTokensTest < FuriBaseTest

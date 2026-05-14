@@ -179,8 +179,8 @@ module Furi
   #   Furi.serialize({name: 'Bogdan', email: 'bogdan@example.com'}, "person")
   #     # => "person[name]=Bogdan&person[email]=bogdan%40example.com"
   #
-  def self.serialize(query, namespace = nil, sorted: false)
-    serialize_tokens(query, namespace, sorted: sorted).join("&")
+  def self.serialize(query, namespace = nil, sorted: false, as_hash: nil)
+    serialize_tokens(query, namespace, sorted: sorted, as_hash: as_hash).join("&")
   end
 
   def self.join(*uris)
@@ -205,7 +205,10 @@ module Furi
 
   protected
 
-  def self.serialize_tokens(query, namespace = nil, sorted: false)
+  def self.serialize_tokens(query, namespace = nil, sorted: false, as_hash: nil)
+    if as_hash && !query.is_a?(Hash) && !query.is_a?(Array)
+      query = as_hash.call(query) || query
+    end
     case query
     when Hash
       keys = query.keys
@@ -214,7 +217,7 @@ module Furi
         value = query[key]
         unless (value.is_a?(Hash) || value.is_a?(Array)) && value.empty?
           key_param = key.respond_to?(:to_param) ? key.to_param : key
-          serialize_tokens(value, namespace ? "#{namespace}[#{key_param}]" : key_param, sorted: sorted)
+          serialize_tokens(value, namespace ? "#{namespace}[#{key_param}]" : key_param, sorted: sorted, as_hash: as_hash)
         end
       end
       result.flatten!
@@ -230,7 +233,7 @@ module Furi
         if item.is_a?(Array)
           raise FormattingError, "Can not serialize #{item.inspect} as element of an Array"
         end
-        serialize_tokens(item, namespace, sorted: sorted)
+        serialize_tokens(item, namespace, sorted: sorted, as_hash: as_hash)
       end
     else
       if namespace
