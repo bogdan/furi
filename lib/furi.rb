@@ -180,9 +180,7 @@ module Furi
   #     # => "person[name]=Bogdan&person[email]=bogdan%40example.com"
   #
   def self.serialize(query, namespace = nil, sorted: false)
-    tokens = serialize_tokens(query, namespace)
-    tokens.sort! if sorted
-    tokens.join("&")
+    serialize_tokens(query, namespace, sorted: sorted).join("&")
   end
 
   def self.join(*uris)
@@ -207,14 +205,15 @@ module Furi
 
   protected
 
-  def self.serialize_tokens(query, namespace = nil)
+  def self.serialize_tokens(query, namespace = nil, sorted: false)
     case query
     when Hash
-      result = query.map do |key, value|
+      keys = query.keys
+      keys.sort_by!(&:to_s) if sorted && !namespace.to_s.include?("[]")
+      result = keys.map do |key|
+        value = query[key]
         unless (value.is_a?(Hash) || value.is_a?(Array)) && value.empty?
-          serialize_tokens(value, namespace ? "#{namespace}[#{key}]" : key)
-        else
-          nil
+          serialize_tokens(value, namespace ? "#{namespace}[#{key}]" : key, sorted: sorted)
         end
       end
       result.flatten!
@@ -230,7 +229,7 @@ module Furi
         if item.is_a?(Array)
           raise FormattingError, "Can not serialize #{item.inspect} as element of an Array"
         end
-        serialize_tokens(item, namespace)
+        serialize_tokens(item, namespace, sorted: sorted)
       end
     else
       if namespace

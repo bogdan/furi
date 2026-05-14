@@ -725,6 +725,14 @@ class FuriSerializeTest < FuriBaseTest
     assert_equal "c=3&a=1&b=2", URI.decode_www_form_component(Furi.serialize({c: 3, a: 1, b: 2}, sorted: false))
     assert_equal "a=1&b=2&c=3", URI.decode_www_form_component(Furi.serialize({c: 3, a: 1, b: 2}, nil, sorted: true))
   end
+
+  def test_serialize_sorted_preserves_array_element_order
+    # sorted: true sorts hash keys but must not reorder keys across array element boundaries,
+    # otherwise round-tripping through a query parser loses data
+    input = {foo: {contents: [{name: "gorby", id: "123"}, {name: "puff", d: "true"}]}}
+    result = URI.decode_www_form_component(Furi.serialize(input, sorted: true))
+    assert_equal "foo[contents][][name]=gorby&foo[contents][][id]=123&foo[contents][][name]=puff&foo[contents][][d]=true", result
+  end
 end
 
 class FuriQueryTokensTest < FuriBaseTest
