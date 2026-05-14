@@ -3,6 +3,7 @@ require "uri"
 
 module Furi
 
+  autoload :QueryParser, 'furi/query_parser'
   autoload :QueryToken, 'furi/query_token'
   autoload :Uri, 'furi/uri'
   autoload :Utils, 'furi/utils'
@@ -136,14 +137,7 @@ module Furi
   #   Furi.serialize({p: {name: 'Bogdan Gusiev', email: 'bogdan@example.com', data: {one: 1, two: 2}}})
   #     # => "p%5Bname%5D=Bogdan&p%5Bemail%5D=bogdan%40example.com&p%5Bdata%5D%5Bone%5D=1&p%5Bdata%5D%5Btwo%5D=2"
   def self.parse_query(query)
-    return Furi::Utils.stringify_keys(query) if query.is_a?(Hash)
-
-    params = {}
-    query_tokens(query).each do |token|
-      parse_query_token(params, token.name, token.value)
-    end
-
-    return params
+    QueryParser.new.parse(query)
   end
 
   # Parses query key/value pairs from query string and returns them raw
@@ -203,6 +197,18 @@ module Furi
   class QueryParseError < Error
   end
 
+  class ParamError < ParseError
+  end
+
+  class ParameterTypeError < ParamError
+  end
+
+  class ParamsTooDeepError < ParamError
+  end
+
+  class InvalidParameterError < ParamError
+  end
+
   protected
 
   def self.serialize_tokens(query, namespace: nil, sorted: false, as_hash: nil)
@@ -244,43 +250,5 @@ module Furi
     end
   end
 
-  def self.parse_query_token(params, name, value)
-    name =~ %r(\A[\[\]]*([^\[\]]+)\]*)
-    namespace = $1 || ''
-    after = $' || ''
-
-    return if namespace.empty?
-
-    current = params[namespace]
-    if after == ""
-      current = value
-    elsif after == "[]"
-      current ||= []
-      unless current.is_a?(Array)
-        raise QueryParseError, "expected Array (got #{current.class}) for param `#{namespace}'"
-      end
-      current << value
-    elsif after =~ %r(^\[\]\[([^\[\]]+)\]$) || after =~ %r(^\[\](.+)$)
-      child_key = $1
-      current ||= []
-      unless current.is_a?(Array)
-        raise QueryParseError, "expected Array (got #{current.class}) for param `#{namespace}'"
-      end
-      if current.last.is_a?(Hash) && !current.last.key?(child_key)
-        parse_query_token(current.last, child_key, value)
-      else
-        current << parse_query_token({}, child_key, value)
-      end
-    else
-      current ||= {}
-      unless current.is_a?(Hash)
-        raise QueryParseError, "expected Hash (got #{current.class}) for param `#{namespace}'"
-      end
-      current = parse_query_token(current, after, value)
-    end
-    params[namespace] = current
-
-    return params
-  end
 
 end

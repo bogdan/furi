@@ -839,13 +839,13 @@ class FuriParseQueryTest < FuriBaseTest
     assert_equal({"x" => {"y" => [{"z" => "1"}, {"z" => "2"}]}}, Furi.parse_query("x[y][][z]=1&x[y][][z]=2"))
     assert_equal({"x" => {"y" => [{"z" => "1", "w" => "a"}, {"z" => "2", "w" => "3"}]}}, Furi.parse_query("x[y][][z]=1&x[y][][w]=a&x[y][][z]=2&x[y][][w]=3"))
 
-    ex = assert_raises(Furi::QueryParseError) { Furi.parse_query("x[y]=1&x[y]z=2") }
+    ex = assert_raises(Furi::ParameterTypeError) { Furi.parse_query("x[y]=1&x[y]z=2") }
     assert_equal "expected Hash (got String) for param `y'", ex.message
 
-    ex = assert_raises(Furi::QueryParseError) { Furi.parse_query("x[y]=1&x[]=1") }
+    ex = assert_raises(Furi::ParameterTypeError) { Furi.parse_query("x[y]=1&x[]=1") }
     assert_match(/expected Array \(got [^)]*\) for param `x'/, ex.message)
 
-    ex = assert_raises(Furi::QueryParseError) { Furi.parse_query("x[y]=1&x[y][][w]=2") }
+    ex = assert_raises(Furi::ParameterTypeError) { Furi.parse_query("x[y]=1&x[y][][w]=2") }
     assert_equal "expected Array (got String) for param `y'", ex.message
   end
 end
