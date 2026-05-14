@@ -34,6 +34,11 @@ class FuriParseTest < FuriBaseTest
     assert_raises(Furi::FormattingError) { Furi.parse("") }
   end
 
+  def test_rfc3986
+    refute Furi.parse("http://goo gl.com").rfc?
+    assert Furi.parse("http://googl.com").rfc?
+  end
+
   def test_raises_parse_error_on_non_integer_port
     assert_raises(Furi::ParseError) { Furi.parse("x-test+scheme.complex:redirect") }
   end
