@@ -757,7 +757,7 @@ class FuriSerializeTest < FuriBaseTest
   def test_serialize_sorted
     assert_equal "a=1&b=2&c=3", URI.decode_www_form_component(Furi.serialize({c: 3, a: 1, b: 2}, sorted: true))
     assert_equal "c=3&a=1&b=2", URI.decode_www_form_component(Furi.serialize({c: 3, a: 1, b: 2}, sorted: false))
-    assert_equal "a=1&b=2&c=3", URI.decode_www_form_component(Furi.serialize({c: 3, a: 1, b: 2}, nil, sorted: true))
+    assert_equal "a=1&b=2&c=3", URI.decode_www_form_component(Furi.serialize({c: 3, a: 1, b: 2}, sorted: true))
   end
 
   def test_build_with_empty_nested_hash_omits_query_string
