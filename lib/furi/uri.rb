@@ -456,6 +456,14 @@ module Furi
       protocol == "https"
     end
 
+    def http?
+      protocol == "http"
+    end
+
+    def relative?
+      !protocol
+    end
+
     def abstract_protocol?
       protocol == ""
     end
