@@ -213,7 +213,8 @@ module Furi
       result = keys.map do |key|
         value = query[key]
         unless (value.is_a?(Hash) || value.is_a?(Array)) && value.empty?
-          serialize_tokens(value, namespace ? "#{namespace}[#{key}]" : key, sorted: sorted)
+          key_param = key.respond_to?(:to_param) ? key.to_param : key
+          serialize_tokens(value, namespace ? "#{namespace}[#{key_param}]" : key_param, sorted: sorted)
         end
       end
       result.flatten!

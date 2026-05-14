@@ -726,6 +726,14 @@ class FuriSerializeTest < FuriBaseTest
     assert_equal "a=1&b=2&c=3", URI.decode_www_form_component(Furi.serialize({c: 3, a: 1, b: 2}, nil, sorted: true))
   end
 
+  def test_serialize_calls_to_param_on_keys_and_values
+    to_param_obj = Class.new(String) { def to_param = "#{self}-1" }
+    key1, val1 = to_param_obj.new("custom"),  to_param_obj.new("param")
+    key2, val2 = to_param_obj.new("custom2"), to_param_obj.new("param2")
+    result = URI.decode_www_form_component(Furi.serialize({ key1 => val1, key2 => val2 }))
+    assert_equal "custom-1=param-1&custom2-1=param2-1", result
+  end
+
   def test_serialize_sorted_preserves_array_element_order
     # sorted: true sorts hash keys but must not reorder keys across array element boundaries,
     # otherwise round-tripping through a query parser loses data

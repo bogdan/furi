@@ -48,7 +48,7 @@ module Furi
       encoded_key = ::URI.encode_www_form_component(name.to_s)
 
       !value.nil? ?
-        "#{encoded_key}=#{::URI.encode_www_form_component(value.to_s)}" :
+        "#{encoded_key}=#{::URI.encode_www_form_component(value_to_param)}" :
         encoded_key
     end
 
@@ -58,6 +58,12 @@ module Furi
 
     def inspect
       [name, value].join('=')
+    end
+
+    private
+
+    def value_to_param
+      (value.respond_to?(:to_param) ? value.to_param : value).to_s
     end
   end
 end
